@@ -11,7 +11,7 @@ export class User {
   @Column()
   password!: string;
 
-  @Column({ nullable: true })
+  @Column()
   email!: string;
 
   @Column({ default: false })
@@ -29,12 +29,12 @@ export class User {
   @Column()
   patronymic!: string;
 
-  @Column()
-  phone!: string;
+  @Column({ nullable: true })
+  phone?: string;
 
-  @Column()
-  telegram!: string;
+  @Column({ nullable: true })
+  telegram?: string;
 
-  @Column()
-  details!: string;
+  @Column({ nullable: true })
+  details?: string;
 }

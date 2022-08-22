@@ -13,4 +13,12 @@ export class UsersService {
   create(user: Omit<User, 'id'>): Promise<User> {
     return this.usersRepository.save(user);
   }
+
+  put(user: User): Promise<User> {
+    return this.usersRepository.save(user);
+  }
+
+  findOneById(id: number): Promise<User | null> {
+    return this.usersRepository.findOneBy({ id });
+  }
 }

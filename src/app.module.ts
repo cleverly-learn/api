@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
-import { AdminsModule } from './admins/admins.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 
@@ -24,7 +23,6 @@ import { AuthModule } from './auth/auth.module';
         synchronize: true,
       }),
     }),
-    AdminsModule,
     UsersModule,
     AuthModule,
   ],
