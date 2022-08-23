@@ -1,18 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
-import * as bcrypt from 'bcrypt';
-import { instanceToPlain } from 'class-transformer';
-import { randomUUID } from 'crypto';
-import { addSeconds } from 'date-fns';
+import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { JwtTokenPayload } from 'auth/helpers/jwt-token-payload';
 import { LessThan, Repository } from 'typeorm';
+import { RefreshToken } from 'auth/entities/refresh-token.entity';
+import { TokenPair } from 'auth/helpers/token-pair';
 import { User } from 'users/entities/user.entity';
 import { UsersService } from 'users/users.service';
-import { RefreshToken } from './entities/refresh-token.entity';
-import { JwtTokenPayload } from './helpers/jwt-token-payload';
-import { TokenPair } from './helpers/token-pair';
+import { addSeconds } from 'date-fns';
+import { instanceToPlain } from 'class-transformer';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class AuthService {

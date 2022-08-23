@@ -1,15 +1,15 @@
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-import { Test } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { RefreshToken } from 'auth/entities/refresh-token.entity';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
+import { AuthService } from 'auth/auth.service';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { RefreshToken } from 'auth/entities/refresh-token.entity';
 import { Repository } from 'typeorm';
+import { Test } from '@nestjs/testing';
 import { User } from 'users/entities/user.entity';
 import { UsersService } from 'users/users.service';
 import { createMock } from '_common/utils/create-mock';
-import { AuthService } from '../auth.service';
+import { getRepositoryToken } from '@nestjs/typeorm';
 
 describe('AuthService', () => {
   let authService: AuthService;

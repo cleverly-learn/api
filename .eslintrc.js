@@ -9,7 +9,13 @@ module.exports = {
     tsconfigRootDir: __dirname,
     sourceType: 'module',
   },
-  plugins: ['prettier', '@typescript-eslint/eslint-plugin', 'unused-imports'],
+  plugins: [
+    'prettier',
+    '@typescript-eslint/eslint-plugin',
+    'unused-imports',
+    'no-relative-import-paths',
+    'sort-imports-es6-autofix',
+  ],
   extends: [
     'airbnb-base',
     'airbnb-typescript/base',
@@ -27,10 +33,16 @@ module.exports = {
     'prettier/prettier': WARN,
 
     'import/prefer-default-export': OFF,
+    'import/order': OFF,
 
     '@typescript-eslint/interface-name-prefix': OFF,
     '@typescript-eslint/explicit-module-boundary-types': OFF,
 
     'unused-imports/no-unused-imports': WARN,
+    'no-relative-import-paths/no-relative-import-paths': [
+      WARN,
+      { rootDir: 'src' },
+    ],
+    'sort-imports-es6-autofix/sort-imports-es6': WARN,
   },
 };

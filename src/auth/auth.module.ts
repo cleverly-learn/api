@@ -1,13 +1,13 @@
-import { Module } from '@nestjs/common';
+import { AuthController } from 'auth/auth.controller';
+import { AuthService } from 'auth/auth.service';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
+import { LocalStrategy } from 'auth/strategies/local.strategy';
+import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
+import { RefreshToken } from 'auth/entities/refresh-token.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from 'users/users.module';
-import { AuthService } from './auth.service';
-import { RefreshToken } from './entities/refresh-token.entity';
-import { LocalStrategy } from './strategies/local.strategy';
-import { AuthController } from './auth.controller';
 
 @Module({
   imports: [
