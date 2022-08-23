@@ -43,4 +43,19 @@ export class AuthService {
       password: await AuthService.hash(password),
     });
   }
+
+  async validateAndGetUser(
+    login: string,
+    password: string,
+  ): Promise<User | null> {
+    const user = await this.usersService.findOneByLogin(login);
+
+    if (!user) {
+      return null;
+    }
+
+    const isValid = await bcrypt.compare(password, user.password);
+
+    return isValid ? user : null;
+  }
 }

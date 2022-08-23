@@ -2,6 +2,7 @@ import { Test } from '@nestjs/testing';
 import { User } from 'users/entities/user.entity';
 import { UsersService } from 'users/users.service';
 import { createMock } from '_common/utils/create-mock';
+import * as bcrypt from 'bcrypt';
 import { AuthService } from '../auth.service';
 
 describe('AuthService', () => {
@@ -75,6 +76,57 @@ describe('AuthService', () => {
         firstName: 'hello',
         password: expectedPassword,
       });
+    });
+  });
+
+  describe('validateAndGetUser', () => {
+    it('Expected: Correct arguments passed', async () => {
+      const comparePassword = 'compare';
+      usersService.findOneByLogin = jest
+        .fn()
+        .mockResolvedValue({ password: comparePassword });
+      const findSpy = jest.spyOn(usersService, 'findOneByLogin');
+      const compareSpy = jest.spyOn(bcrypt, 'compare');
+      const login = 'login';
+      const password = 'password';
+
+      await authService.validateAndGetUser(login, password);
+
+      expect(findSpy).toBeCalledWith(login);
+      expect(compareSpy).toBeCalledWith(password, comparePassword);
+    });
+
+    it('When: User is not found. Expected: null', async () => {
+      usersService.findOneByLogin = jest.fn().mockResolvedValue(null);
+
+      const actual = await authService.validateAndGetUser('test', 'test');
+
+      expect(actual).toBeNull();
+    });
+
+    it('When: User is not valid. Expected: null', async () => {
+      usersService.findOneByLogin = jest.fn().mockResolvedValue({});
+      const compareSpy = jest
+        .spyOn(bcrypt, 'compare')
+        .mockResolvedValue(false as never);
+
+      const actual = await authService.validateAndGetUser('test', 'test');
+
+      expect(compareSpy).toBeCalled();
+      expect(actual).toBeNull();
+    });
+
+    it('When: User valid. Expected: User', async () => {
+      const testUser = { login: 'test' };
+      usersService.findOneByLogin = jest.fn().mockResolvedValue(testUser);
+      const compareSpy = jest
+        .spyOn(bcrypt, 'compare')
+        .mockResolvedValue(true as never);
+
+      const actual = await authService.validateAndGetUser('test', 'test');
+
+      expect(compareSpy).toBeCalled();
+      expect(actual).toEqual(testUser);
     });
   });
 });
