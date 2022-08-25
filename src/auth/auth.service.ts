@@ -7,11 +7,12 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtTokenPayload } from 'auth/helpers/jwt-token-payload';
 import { LessThan, Repository } from 'typeorm';
 import { RefreshToken } from 'auth/entities/refresh-token.entity';
-import { TokenPair } from 'auth/helpers/token-pair';
+import { TokenPairDto } from 'auth/dto/token-pair.dto';
 import { User } from 'users/entities/user.entity';
 import { UsersService } from 'users/users.service';
-import { addSeconds } from 'date-fns';
+import { addSeconds, differenceInSeconds } from 'date-fns';
 import { instanceToPlain } from 'class-transformer';
+import { isNull } from 'lodash';
 import { randomUUID } from 'crypto';
 
 @Injectable()
@@ -32,9 +33,9 @@ export class AuthService {
   }
 
   async createDefaultAdminIfNeeded(): Promise<void> {
-    const defaultAdmin = await this.usersService.findOneById(1);
+    const existsDefaultAdmin = await this.usersService.existsById(1);
 
-    if (defaultAdmin) {
+    if (existsDefaultAdmin) {
       return;
     }
 
@@ -80,7 +81,7 @@ export class AuthService {
       password: true,
     });
 
-    if (!user) {
+    if (isNull(user)) {
       return null;
     }
 
@@ -89,11 +90,11 @@ export class AuthService {
     return isValid ? user.id : null;
   }
 
-  async generateTokenPair(userId: number): Promise<TokenPair> {
+  async generateTokenPair(userId: number): Promise<TokenPairDto> {
     const accessToken = this.generateAccessToken(userId);
     const refreshToken = await this.generateRefreshToken(userId);
 
-    return new TokenPair(accessToken, refreshToken);
+    return new TokenPairDto(accessToken, refreshToken);
   }
 
   generateAccessToken(userId: number): string {
@@ -114,5 +115,27 @@ export class AuthService {
     await this.refreshTokensRepository.save(refreshToken);
 
     return refreshToken.token;
+  }
+
+  async refreshTokenPair(refreshToken: string): Promise<TokenPairDto | null> {
+    const oldRefreshToken = await this.refreshTokensRepository.findOneBy({
+      token: refreshToken,
+    });
+
+    if (isNull(oldRefreshToken)) {
+      return null;
+    }
+
+    await this.refreshTokensRepository.remove(oldRefreshToken);
+
+    if (this.isRefreshTokenExpired(oldRefreshToken.expiresAt)) {
+      return null;
+    }
+
+    return this.generateTokenPair(oldRefreshToken.userId);
+  }
+
+  private isRefreshTokenExpired(expiresAt: Date): boolean {
+    return differenceInSeconds(expiresAt, new Date()) <= 0;
   }
 }

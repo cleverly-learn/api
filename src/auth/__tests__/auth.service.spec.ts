@@ -6,6 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { RefreshToken } from 'auth/entities/refresh-token.entity';
 import { Repository } from 'typeorm';
 import { Test } from '@nestjs/testing';
+import { TokenPairDto } from 'auth/dto/token-pair.dto';
 import { User } from 'users/entities/user.entity';
 import { UsersService } from 'users/users.service';
 import { createMock } from '_common/utils/create-mock';
@@ -44,15 +45,15 @@ describe('AuthService', () => {
 
   describe('createDefaultAdminIfNeeded', () => {
     it('Expected: Admin is searched with id 1', async () => {
-      const findSpy = jest.spyOn(usersService, 'findOneById');
+      const existsSpy = jest.spyOn(usersService, 'existsById');
 
       await authService.createDefaultAdminIfNeeded();
 
-      expect(findSpy).toBeCalledWith(1);
+      expect(existsSpy).toBeCalledWith(1);
     });
 
     it('When: Admin exists. Expected: New user is not created', async () => {
-      usersService.findOneById = jest.fn().mockResolvedValue({});
+      usersService.existsById = jest.fn().mockResolvedValue(false);
       const createSpy = jest.spyOn(usersService, 'put');
 
       await authService.createDefaultAdminIfNeeded();
@@ -195,6 +196,47 @@ describe('AuthService', () => {
         accessToken: 'token1',
         refreshToken: 'token2',
       });
+    });
+  });
+
+  describe('refreshTokenPair', () => {
+    it('When: Token does not exist. Expected: null', async () => {
+      refreshTokensRepository.findOneBy = jest.fn().mockResolvedValue(null);
+      const removeSpy = jest.spyOn(refreshTokensRepository, 'remove');
+
+      const actual = await authService.refreshTokenPair('test');
+
+      expect(actual).toBeNull();
+      expect(removeSpy).not.toBeCalled();
+    });
+
+    it('When: Token expired. Expected: null, token removed', async () => {
+      const testDate = new Date('2000-01-01 00:00:00');
+      jest.useFakeTimers().setSystemTime(testDate);
+      const removeSpy = jest.spyOn(refreshTokensRepository, 'remove');
+      const token = { expiresAt: testDate };
+      refreshTokensRepository.findOneBy = jest.fn().mockResolvedValue(token);
+
+      const actual = await authService.refreshTokenPair('test');
+
+      expect(actual).toBeNull();
+      expect(removeSpy).toBeCalledWith(token);
+    });
+
+    it('When: Token valid. Expected: New tokens', async () => {
+      refreshTokensRepository.findOneBy = jest
+        .fn()
+        .mockResolvedValue({ userId: 1 });
+      const pair: TokenPairDto = {
+        accessToken: 'access',
+        refreshToken: 'refresh',
+      };
+      authService.generateTokenPair = jest.fn().mockResolvedValue(pair);
+
+      const actual = await authService.refreshTokenPair('test');
+
+      expect(actual).toEqual(pair);
+      expect(authService.generateTokenPair).toBeCalledWith(1);
     });
   });
 });

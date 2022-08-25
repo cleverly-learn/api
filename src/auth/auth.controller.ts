@@ -1,10 +1,18 @@
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { AuthService } from 'auth/auth.service';
-import { Controller, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
 import { LocalAuthGuard } from 'auth/guards/local-auth.guard';
 import { LoginRequestDto } from 'auth/dto/login.request.dto';
-import { TokenPair } from 'auth/helpers/token-pair';
+import { RefreshTokenPairRequestDto } from 'auth/dto/refresh-token-pair.request.dto';
+import { TokenPairDto } from 'auth/dto/token-pair.dto';
 import { UserId } from 'auth/decorators/user.decorators';
+import { isNull } from 'lodash';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -14,7 +22,20 @@ export class AuthController {
   @ApiBody({ type: LoginRequestDto })
   @Post('login')
   @UseGuards(LocalAuthGuard)
-  login(@UserId() userId: number): Promise<TokenPair> {
+  login(@UserId() userId: number): Promise<TokenPairDto> {
     return this.authService.generateTokenPair(userId);
+  }
+
+  @Post('refresh')
+  async refreshTokenPair(
+    @Body() { refreshToken }: RefreshTokenPairRequestDto,
+  ): Promise<TokenPairDto> {
+    const tokenPair = await this.authService.refreshTokenPair(refreshToken);
+
+    if (isNull(tokenPair)) {
+      throw new UnauthorizedException();
+    }
+
+    return tokenPair;
   }
 }
