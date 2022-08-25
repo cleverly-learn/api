@@ -38,6 +38,8 @@ module.exports = {
     '@typescript-eslint/interface-name-prefix': OFF,
     '@typescript-eslint/explicit-module-boundary-types': OFF,
 
+    'class-methods-use-this': OFF,
+
     'unused-imports/no-unused-imports': WARN,
     'no-relative-import-paths/no-relative-import-paths': [
       WARN,

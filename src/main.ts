@@ -10,7 +10,10 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
 
-  const swaggerConfig = new DocumentBuilder().setTitle('Cleverly API').build();
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Cleverly API')
+    .addBearerAuth()
+    .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('docs', app, document);
 
