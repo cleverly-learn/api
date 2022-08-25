@@ -71,11 +71,14 @@ export class AuthService {
     });
   }
 
-  async validateAndGetUser(
+  async validateAndGetUserId(
     login: string,
     password: string,
-  ): Promise<User | null> {
-    const user = await this.usersService.findOneByLogin(login);
+  ): Promise<number | null> {
+    const user = await this.usersService.findOneByLogin(login, {
+      id: true,
+      password: true,
+    });
 
     if (!user) {
       return null;
@@ -83,7 +86,7 @@ export class AuthService {
 
     const isValid = await bcrypt.compare(password, user.password);
 
-    return isValid ? user : null;
+    return isValid ? user.id : null;
   }
 
   async generateTokenPair(userId: number): Promise<TokenPair> {

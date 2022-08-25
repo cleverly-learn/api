@@ -1,6 +1,6 @@
+import { FindOptionsSelect, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
 import { User } from 'users/entities/user.entity';
 
 @Injectable()
@@ -22,7 +22,10 @@ export class UsersService {
     return this.usersRepository.findOneBy({ id });
   }
 
-  findOneByLogin(login: string): Promise<User | null> {
-    return this.usersRepository.findOneBy({ login });
+  findOneByLogin(
+    login: string,
+    select?: FindOptionsSelect<User>,
+  ): Promise<User | null> {
+    return this.usersRepository.findOne({ where: { login }, select });
   }
 }

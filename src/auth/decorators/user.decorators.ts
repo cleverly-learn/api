@@ -1,15 +1,15 @@
 import { ExecutionContext, createParamDecorator } from '@nestjs/common';
 
 /**
- * Fetches SafeUser from request.
+ * Fetches user id from request.
  *
  * @example
  * (@)Get()
- * async getData(@User() user: SafeUser) {}
+ * async getData(@UserId() userId: number) {}
  */
-export const User = createParamDecorator(
+export const UserId = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
-    return request.user;
+    return request.userId;
   },
 );

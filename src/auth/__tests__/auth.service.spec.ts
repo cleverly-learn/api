@@ -108,16 +108,16 @@ describe('AuthService', () => {
       const login = 'login';
       const password = 'password';
 
-      await authService.validateAndGetUser(login, password);
+      await authService.validateAndGetUserId(login, password);
 
-      expect(findSpy).toBeCalledWith(login);
+      expect(findSpy).toBeCalledWith(login, { id: true, password: true });
       expect(compareSpy).toBeCalledWith(password, comparePassword);
     });
 
     it('When: User is not found. Expected: null', async () => {
       usersService.findOneByLogin = jest.fn().mockResolvedValue(null);
 
-      const actual = await authService.validateAndGetUser('test', 'test');
+      const actual = await authService.validateAndGetUserId('test', 'test');
 
       expect(actual).toBeNull();
     });
@@ -128,23 +128,22 @@ describe('AuthService', () => {
         .spyOn(bcrypt, 'compare')
         .mockResolvedValue(false as never);
 
-      const actual = await authService.validateAndGetUser('test', 'test');
+      const actual = await authService.validateAndGetUserId('test', 'test');
 
       expect(compareSpy).toBeCalled();
       expect(actual).toBeNull();
     });
 
-    it('When: User valid. Expected: User', async () => {
-      const testUser = { login: 'test' };
-      usersService.findOneByLogin = jest.fn().mockResolvedValue(testUser);
+    it('When: User valid. Expected: User id', async () => {
+      usersService.findOneByLogin = jest.fn().mockResolvedValue({ id: 1 });
       const compareSpy = jest
         .spyOn(bcrypt, 'compare')
         .mockResolvedValue(true as never);
 
-      const actual = await authService.validateAndGetUser('test', 'test');
+      const actual = await authService.validateAndGetUserId('test', 'test');
 
       expect(compareSpy).toBeCalled();
-      expect(actual).toEqual(testUser);
+      expect(actual).toEqual(1);
     });
   });
 

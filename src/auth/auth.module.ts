@@ -20,7 +20,7 @@ import { UsersModule } from 'users/users.module';
         signOptions: { expiresIn: +configService.get('JWT_EXPIRES_IN') },
       }),
     }),
-    PassportModule,
+    PassportModule.register({ property: 'userId' }),
   ],
   providers: [AuthService, LocalStrategy],
   controllers: [AuthController],
