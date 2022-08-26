@@ -53,7 +53,7 @@ describe('AuthService', () => {
     });
 
     it('When: Admin exists. Expected: New user is not created', async () => {
-      usersService.existsById = jest.fn().mockResolvedValue(false);
+      usersService.existsById = jest.fn().mockResolvedValue(true);
       const createSpy = jest.spyOn(usersService, 'put');
 
       await authService.createDefaultAdminIfNeeded();
@@ -62,7 +62,7 @@ describe('AuthService', () => {
     });
 
     it('When: Admin is not exists. Expected: New user created', async () => {
-      usersService.findOneById = jest.fn().mockResolvedValue(null);
+      usersService.findOneById = jest.fn().mockResolvedValue(false);
       const createSpy = jest.spyOn(usersService, 'put');
 
       await authService.createDefaultAdminIfNeeded();
