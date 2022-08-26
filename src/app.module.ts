@@ -17,7 +17,9 @@ import { UsersModule } from 'users/users.module';
         username: configService.get('DB_USER'),
         database: configService.get('DB_NAME'),
         password: configService.get('DB_PASSWORD'),
-        ssl: configService.get('NODE_ENV') === 'production',
+        ssl: configService.get('NODE_ENV') === 'production' && {
+          rejectUnauthorized: false,
+        },
         namingStrategy: new SnakeNamingStrategy(),
         autoLoadEntities: true,
         logging: true,
