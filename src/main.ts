@@ -19,7 +19,7 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
 
-  await app.listen(configService.get<number>('HTTP_PORT', 3001));
+  await app.listen(configService.get<number>('PORT', 3001));
 }
 
 bootstrap();
