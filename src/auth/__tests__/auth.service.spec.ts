@@ -1,5 +1,3 @@
-import * as bcrypt from 'bcrypt';
-import * as crypto from 'crypto';
 import { AuthService } from 'auth/auth.service';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -11,6 +9,8 @@ import { User } from 'users/entities/user.entity';
 import { UsersService } from 'users/users.service';
 import { createMock } from '_common/utils/create-mock';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 
 describe('AuthService', () => {
   let authService: AuthService;
