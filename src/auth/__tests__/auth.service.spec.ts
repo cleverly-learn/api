@@ -232,11 +232,12 @@ describe('AuthService', () => {
         refreshToken: 'refresh',
       };
       authService.generateTokenPair = jest.fn().mockResolvedValue(pair);
+      const generateSpy = jest.spyOn(authService, 'generateTokenPair');
 
       const actual = await authService.refreshTokenPair('test');
 
       expect(actual).toEqual(pair);
-      expect(authService.generateTokenPair).toBeCalledWith(1);
+      expect(generateSpy).toBeCalledWith(1);
     });
   });
 });
