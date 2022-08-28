@@ -34,6 +34,7 @@ module.exports = {
 
     'import/prefer-default-export': OFF,
     'import/order': OFF,
+    'import/no-default-export': ERROR,
 
     '@typescript-eslint/interface-name-prefix': OFF,
     '@typescript-eslint/explicit-module-boundary-types': OFF,
