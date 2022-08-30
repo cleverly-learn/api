@@ -51,6 +51,9 @@ export class AuthService {
       email: '',
       isAdmin: true,
       isRegistered: true,
+      details: '',
+      phone: '',
+      telegram: '',
     });
   }
 

@@ -31,12 +31,12 @@ export class User {
   @Column()
   patronymic!: string;
 
-  @Column({ nullable: true })
-  phone?: string;
+  @Column()
+  phone!: string;
 
-  @Column({ nullable: true })
-  telegram?: string;
+  @Column()
+  telegram!: string;
 
-  @Column({ nullable: true })
-  details?: string;
+  @Column()
+  details!: string;
 }
