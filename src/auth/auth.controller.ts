@@ -9,8 +9,7 @@ import {
 } from '@nestjs/common';
 import { LocalAuthGuard } from 'auth/guards/local-auth.guard';
 import { LoginRequestDto } from 'auth/dto/login.request.dto';
-import { RefreshTokenPairRequestDto } from 'auth/dto/refresh-token-pair.request.dto';
-import { RevokeRefreshTokenRequestDto } from 'auth/dto/revoke-refresh-token.request.dto';
+import { RefreshTokenRequestDto } from 'auth/dto/refresh-token.request.dto';
 import { TokenPairDto } from 'auth/dto/token-pair.dto';
 import { UserId } from 'auth/decorators/user.decorators';
 import { isNull } from 'lodash';
@@ -29,7 +28,7 @@ export class AuthController {
 
   @Post('refresh')
   async refreshTokenPair(
-    @Body() { refreshToken }: RefreshTokenPairRequestDto,
+    @Body() { refreshToken }: RefreshTokenRequestDto,
   ): Promise<TokenPairDto> {
     const tokenPair = await this.authService.refreshTokenPair(refreshToken);
 
@@ -42,7 +41,7 @@ export class AuthController {
 
   @Post('revoke')
   async revokeRefreshToken(
-    @Body() { refreshToken }: RevokeRefreshTokenRequestDto,
+    @Body() { refreshToken }: RefreshTokenRequestDto,
   ): Promise<void> {
     return this.authService.removeRefreshToken(refreshToken);
   }

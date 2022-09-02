@@ -1,6 +1,6 @@
 import { IsUUID } from 'class-validator';
 
-export class RefreshTokenPairRequestDto {
+export class RefreshTokenRequestDto {
   @IsUUID('4')
   refreshToken!: string;
 }
