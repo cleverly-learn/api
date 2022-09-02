@@ -141,4 +141,8 @@ export class AuthService {
   private isRefreshTokenExpired(expiresAt: Date): boolean {
     return differenceInSeconds(expiresAt, new Date()) <= 0;
   }
+
+  async removeRefreshToken(token: string): Promise<void> {
+    await this.refreshTokensRepository.delete({ token });
+  }
 }
