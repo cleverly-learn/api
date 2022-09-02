@@ -1,6 +1,7 @@
-import { IsUUID } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class RefreshTokenRequestDto {
-  @IsUUID('4')
+  @IsString()
+  @IsNotEmpty()
   refreshToken!: string;
 }
