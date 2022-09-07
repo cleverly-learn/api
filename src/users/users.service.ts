@@ -18,13 +18,22 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
+  async patch(
+    id: number,
+    user: Partial<
+      Pick<User, 'firstName' | 'lastName' | 'patronymic' | 'password'>
+    >,
+  ): Promise<User> {
+    return this.usersRepository.save({ id, ...user });
+  }
+
   async existsById(id: number): Promise<boolean> {
     const count = await this.usersRepository.countBy({ id });
     return count > 0;
   }
 
-  findOneById(id: number): Promise<User | null> {
-    return this.usersRepository.findOneBy({ id });
+  findOneById(id: number): Promise<User> {
+    return this.usersRepository.findOneByOrFail({ id });
   }
 
   findOneByLogin(
