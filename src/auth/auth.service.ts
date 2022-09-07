@@ -13,7 +13,7 @@ import { UsersService } from 'users/users.service';
 import { addSeconds, differenceInSeconds } from 'date-fns';
 import { generateRandomString } from '_common/utils/random-string';
 import { instanceToPlain } from 'class-transformer';
-import { isNull } from 'lodash';
+import { isNull, isUndefined } from 'lodash';
 
 @Injectable()
 export class AuthService {
@@ -41,10 +41,10 @@ export class AuthService {
 
     const defaultName = 'admin';
 
-    await this.usersService.put({
+    const protectedUser = await AuthService.withHashedPassword({
       id: 1,
       login: defaultName,
-      password: await AuthService.hash(defaultName),
+      password: defaultName,
       firstName: defaultName,
       lastName: '',
       patronymic: '',
@@ -55,6 +55,8 @@ export class AuthService {
       phone: '',
       telegram: '',
     });
+
+    await this.usersService.put(protectedUser);
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
@@ -68,11 +70,22 @@ export class AuthService {
     return bcrypt.hash(str, 10);
   }
 
-  async register({ password, ...user }: Omit<User, 'id'>): Promise<User> {
-    return this.usersService.create({
+  static async withHashedPassword<T extends Partial<User>>(
+    user: T,
+  ): Promise<T> {
+    if (isUndefined(user.password)) {
+      return user;
+    }
+
+    return {
       ...user,
-      password: await AuthService.hash(password),
-    });
+      password: await AuthService.hash(user.password),
+    };
+  }
+
+  async register(user: Omit<User, 'id'>): Promise<User> {
+    const protectedUser = await AuthService.withHashedPassword(user);
+    return this.usersService.create(protectedUser);
   }
 
   async validateAndGetUserId(

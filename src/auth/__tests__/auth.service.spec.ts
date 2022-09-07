@@ -239,4 +239,27 @@ describe('AuthService', () => {
       expect(generateSpy).toBeCalledWith(1);
     });
   });
+
+  describe('withHashedPassword', () => {
+    it('When: Password is not set. Expect: Same entity', async () => {
+      const object = { test: 'hello', password: undefined };
+
+      const actual = await AuthService.withHashedPassword(object);
+
+      expect(actual).toEqual(object);
+    });
+
+    it('When: Password is set. Expect: Password hashed', async () => {
+      const object = { test: 'hello', password: 'test' };
+      const hash = 'hashed';
+      AuthService.hash = jest.fn().mockResolvedValue(hash);
+
+      const actual = await AuthService.withHashedPassword(object);
+
+      expect(actual).toEqual({
+        ...object,
+        password: hash,
+      });
+    });
+  });
 });
