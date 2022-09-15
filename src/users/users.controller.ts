@@ -1,8 +1,10 @@
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthService } from 'auth/auth.service';
 import {
+  BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -21,7 +23,7 @@ import { UserId } from 'auth/decorators/user.decorators';
 import { UsersService } from 'users/users.service';
 import { ValidateUserIdPipe } from '_common/pipes/validate-user-id.pipe';
 import { isAdmin } from '_common/enums/role.enum';
-import { isUndefined } from 'lodash';
+import { isEqual, isUndefined } from 'lodash';
 
 @Controller('users')
 @ApiTags('Users')
@@ -81,5 +83,17 @@ export class UsersController {
     });
 
     return new UserDto(user);
+  }
+
+  @Delete(':id')
+  async delete(
+    @UserId() userId: number,
+    @Param('id') id: number,
+  ): Promise<void> {
+    if (isEqual(userId, id)) {
+      throw new BadRequestException("Can't delete current user");
+    }
+
+    return this.usersService.delete(id);
   }
 }

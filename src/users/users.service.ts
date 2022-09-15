@@ -45,4 +45,8 @@ export class UsersService {
   findAllAdmins(page?: Pageable): Promise<User[]> {
     return this.usersRepository.findAllAdmins(page);
   }
+
+  async delete(id: number): Promise<void> {
+    await this.usersRepository.delete(id);
+  }
 }
