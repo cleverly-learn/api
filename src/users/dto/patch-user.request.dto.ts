@@ -1,25 +1,11 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { CreateUserRequestDto } from 'users/dto/create-user.request.dto';
+import { PartialType, PickType } from '@nestjs/swagger';
 
-export class PatchUserRequestDto {
-  @IsOptional()
-  @IsString()
-  firstName?: string;
-
-  @IsOptional()
-  @IsString()
-  lastName?: string;
-
-  @IsOptional()
-  @IsString()
-  patronymic?: string;
-
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  login?: string;
-
-  @IsOptional()
-  @IsString()
-  @IsNotEmpty()
-  password?: string;
-}
+export class PatchUserRequestDto extends PartialType(
+  PickType(CreateUserRequestDto, [
+    'firstName',
+    'lastName',
+    'patronymic',
+    'password',
+  ]),
+) {}

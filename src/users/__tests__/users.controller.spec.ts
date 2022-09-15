@@ -1,5 +1,7 @@
+import * as randomString from '_common/utils/random-string';
 import { AuthService } from 'auth/auth.service';
 import { Test } from '@nestjs/testing';
+import { User } from 'users/entities/user.entity';
 import { UsersController } from 'users/users.controller';
 import { UsersService } from 'users/users.service';
 import { mockProvider } from '_common/utils/test-helpers';
@@ -20,19 +22,58 @@ describe('UsersController', () => {
   describe('patchCurrentUser', () => {
     it('When: Data provided. Expected: Service called with provided id and hashed user password', async () => {
       const hash = 'hashed';
-      AuthService.hash = jest.fn().mockResolvedValue(hash);
+      const hashSpy = jest.spyOn(AuthService, 'hash').mockResolvedValue(hash);
       const dto = {
         firstName: 'hello',
         password: 'test',
       };
-      usersService.patch = jest.fn().mockReturnValue({});
-      const patchSpy = jest.spyOn(usersService, 'patch');
+      const patchSpy = jest.spyOn(usersService, 'patch').mockResolvedValue({});
 
       await usersController.patchCurrentUser(1, dto);
 
+      expect(hashSpy).toBeCalledWith(dto.password);
       expect(patchSpy).toBeCalledWith(1, {
         ...dto,
         password: hash,
+      });
+    });
+  });
+
+  describe('create', () => {
+    it('When: Data provided. Expected: Service called with random login and hashed user password', async () => {
+      const hash = 'hashed';
+      const hashSpy = jest.spyOn(AuthService, 'hash').mockResolvedValue(hash);
+      const login = 'randomLogin';
+      const randomStringSpy = jest
+        .spyOn(randomString, 'randomString')
+        .mockReturnValue(login);
+      const dto = {
+        password: 'password',
+        email: 'email',
+        isRegistered: true,
+        isAdmin: true,
+        firstName: 'first',
+        lastName: 'last',
+        patronymic: 'patron',
+      };
+      const createSpy = jest
+        .spyOn(usersService, 'create')
+        .mockResolvedValue({} as User);
+
+      await usersController.create(dto);
+
+      expect(hashSpy).toBeCalledWith(dto.password);
+      expect(randomStringSpy).toBeCalledWith(
+        10,
+        randomString.Symbols.LATIN_LETTERS,
+      );
+      expect(createSpy).toBeCalledWith({
+        ...dto,
+        login,
+        password: hash,
+        phone: '',
+        telegram: '',
+        details: '',
       });
     });
   });

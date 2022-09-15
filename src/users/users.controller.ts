@@ -6,13 +6,16 @@ import {
   Get,
   Param,
   Patch,
+  Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { CreateUserRequestDto } from 'users/dto/create-user.request.dto';
 import { GetAllRequestDto } from 'users/dto/get-all.request.dto';
 import { JwtAuthGuard } from '_common/guards/jwt-auth.guard';
 import { PatchUserRequestDto } from 'users/dto/patch-user.request.dto';
 import { PatchUserResponseDto } from 'users/dto/patch-user.response.dto';
+import { Symbols, randomString } from '_common/utils/random-string';
 import { UserDto } from 'users/dto/user.dto';
 import { UserId } from 'auth/decorators/user.decorators';
 import { UsersService } from 'users/users.service';
@@ -63,5 +66,20 @@ export class UsersController {
     const user = await this.usersService.patch(id, protectedDto);
 
     return new PatchUserResponseDto(user);
+  }
+
+  @Post()
+  async create(@Body() createUserDto: CreateUserRequestDto): Promise<UserDto> {
+    const protectedDto = await AuthService.withHashedPassword(createUserDto);
+    const user = await this.usersService.create({
+      ...protectedDto,
+      login: randomString(10, Symbols.LATIN_LETTERS),
+      email: protectedDto.email ?? '',
+      phone: '',
+      telegram: '',
+      details: '',
+    });
+
+    return new UserDto(user);
   }
 }
