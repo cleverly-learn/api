@@ -11,10 +11,7 @@ function getRandomChar(chars = ALL_SYMBOLS): string {
   return chars.charAt(Math.floor(Math.random() * chars.length));
 }
 
-export function generateRandomString(
-  length: number,
-  symbols?: Symbols,
-): string {
+export function randomString(length: number, symbols?: Symbols): string {
   if (length <= 0) {
     return '';
   }

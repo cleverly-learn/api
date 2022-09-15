@@ -11,7 +11,7 @@ import { TokenPairDto } from 'auth/dto/token-pair.dto';
 import { User } from 'users/entities/user.entity';
 import { UsersService } from 'users/users.service';
 import { addSeconds, differenceInSeconds } from 'date-fns';
-import { generateRandomString } from '_common/utils/random-string';
+import { randomString } from '_common/utils/random-string';
 import { instanceToPlain } from 'class-transformer';
 import { isNull, isUndefined } from 'lodash';
 
@@ -122,7 +122,7 @@ export class AuthService {
     const refreshToken = new RefreshToken();
 
     refreshToken.userId = userId;
-    refreshToken.token = generateRandomString(500);
+    refreshToken.token = randomString(500);
     refreshToken.expiresAt = addSeconds(
       new Date(),
       +this.configService.get('REFRESH_TOKEN_EXPIRES_IN'),
