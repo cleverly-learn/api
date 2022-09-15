@@ -162,9 +162,7 @@ describe('AuthService', () => {
       const saveSpy = jest.spyOn(refreshTokensRepository, 'save');
       configService.get = jest.fn().mockReturnValue('86400');
       const expected = 'test-token';
-      jest
-        .spyOn(randomStringUtil, 'generateRandomString')
-        .mockReturnValue(expected);
+      jest.spyOn(randomStringUtil, 'randomString').mockReturnValue(expected);
 
       const actual = await authService.generateRefreshToken(1);
 
