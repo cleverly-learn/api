@@ -1,5 +1,6 @@
 import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
 import { Repository } from 'typeorm';
+import { ValueProvider } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
 interface Class<T, Args extends unknown[]> {
@@ -14,12 +15,12 @@ type MockedObject = Record<string, jest.Mock>;
  *    providers: [
  *      {
  *        provide: Service,
- *        useValue: mockProvider(Service),
+ *        useValue: mockClass(Service),
  *      },
  *    ],
  *  }).compile();
  */
-export function mockProvider<T, Args extends unknown[]>(
+export function mockClass<T, Args extends unknown[]>(
   object: Class<T, Args>,
 ): MockedObject {
   return Object.fromEntries(
@@ -33,12 +34,12 @@ export function mockProvider<T, Args extends unknown[]>(
  *    providers: [mockNestProvider(Service)],
  *  }).compile();
  */
-export function mockNestProvider<T, Args extends unknown[]>(
+export function mockProvider<T, Args extends unknown[]>(
   object: Class<T, Args>,
-): { provide: Class<T, Args>; useValue: MockedObject } {
+): ValueProvider<MockedObject> {
   return {
     provide: object,
-    useValue: mockProvider(object),
+    useValue: mockClass(object),
   };
 }
 
@@ -48,12 +49,11 @@ export function mockNestProvider<T, Args extends unknown[]>(
  *    providers: [mockNestRepository(Entity)],
  *  }).compile();
  */
-export function mockNestRepository(entity: EntityClassOrSchema): {
-  provide: ReturnType<typeof getRepositoryToken>;
-  useValue: MockedObject;
-} {
+export function mockRepository(
+  entity: EntityClassOrSchema,
+): ValueProvider<MockedObject> {
   return {
     provide: getRepositoryToken(entity),
-    useValue: mockProvider(Repository),
+    useValue: mockClass(Repository),
   };
 }

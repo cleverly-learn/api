@@ -9,10 +9,7 @@ import { TokenPairDto } from 'auth/dto/token-pair.dto';
 import { User } from 'users/entities/user.entity';
 import { UsersService } from 'users/users.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import {
-  mockNestProvider,
-  mockNestRepository,
-} from '_common/utils/test-helpers';
+import { mockProvider, mockRepository } from '_common/utils/test-helpers';
 import bcrypt from 'bcrypt';
 
 describe('AuthService', () => {
@@ -25,8 +22,8 @@ describe('AuthService', () => {
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       providers: [
-        mockNestProvider(UsersService),
-        mockNestRepository(RefreshToken),
+        mockProvider(UsersService),
+        mockRepository(RefreshToken),
         AuthService,
         JwtService,
         ConfigService,

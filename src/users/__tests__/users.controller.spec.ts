@@ -2,7 +2,7 @@ import { AuthService } from 'auth/auth.service';
 import { Test } from '@nestjs/testing';
 import { UsersController } from 'users/users.controller';
 import { UsersService } from 'users/users.service';
-import { mockNestProvider } from '_common/utils/test-helpers';
+import { mockProvider } from '_common/utils/test-helpers';
 
 describe('UsersController', () => {
   let usersController: UsersController;
@@ -10,7 +10,7 @@ describe('UsersController', () => {
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
-      providers: [mockNestProvider(UsersService), UsersController],
+      providers: [mockProvider(UsersService), UsersController],
     }).compile();
 
     usersController = module.get(UsersController);
