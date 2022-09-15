@@ -1,14 +1,12 @@
-import { FindOptionsSelect, Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
+import { FindOptionsSelect } from 'typeorm';
 import { Injectable } from '@nestjs/common';
+import { Pageable } from '_common/types/pageable.interface';
 import { User } from 'users/entities/user.entity';
+import { UsersRepository } from 'users/repositories/users.repository';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
-  ) {}
+  constructor(private readonly usersRepository: UsersRepository) {}
 
   create(user: Omit<User, 'id'>): Promise<User> {
     return this.usersRepository.save(user);
@@ -41,5 +39,9 @@ export class UsersService {
     select?: FindOptionsSelect<User>,
   ): Promise<User | null> {
     return this.usersRepository.findOne({ where: { login }, select });
+  }
+
+  findAllAdmins(page?: Pageable): Promise<User[]> {
+    return this.usersRepository.findAllAdmins(page);
   }
 }
