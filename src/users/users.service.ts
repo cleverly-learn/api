@@ -4,6 +4,12 @@ import { Pageable } from '_common/types/pageable.interface';
 import { User } from 'users/entities/user.entity';
 import { UsersRepository } from 'users/repositories/users.repository';
 
+type PatchParams = Partial<
+  Pick<User, 'firstName' | 'lastName' | 'patronymic' | 'login' | 'password'>
+>;
+type PatchReturnValue = Partial<Pick<User, 'id'>> &
+  Omit<PatchParams, 'password'>;
+
 @Injectable()
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
@@ -16,12 +22,7 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  async patch(
-    id: number,
-    user: Partial<
-      Pick<User, 'firstName' | 'lastName' | 'patronymic' | 'password'>
-    >,
-  ): Promise<User> {
+  async patch(id: number, user: PatchParams): Promise<PatchReturnValue> {
     return this.usersRepository.save({ id, ...user });
   }
 

@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class PatchCurrentUserRequestDto {
+export class PatchUserRequestDto {
   @IsOptional()
   @IsString()
   firstName?: string;
@@ -12,6 +12,11 @@ export class PatchCurrentUserRequestDto {
   @IsOptional()
   @IsString()
   patronymic?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  login?: string;
 
   @IsOptional()
   @IsString()
