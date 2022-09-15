@@ -4,7 +4,9 @@ import { User } from 'users/entities/user.entity';
 export class UserDto {
   id!: number;
 
-  email!: string | null;
+  login!: string;
+
+  email!: string;
 
   isRegistered!: boolean;
 
@@ -16,19 +18,20 @@ export class UserDto {
 
   patronymic!: string;
 
-  phone!: string | null;
+  phone!: string;
 
-  telegram!: string | null;
+  telegram!: string;
 
-  details!: string | null;
+  details!: string;
 
-  scheduleId!: string | null;
+  scheduleId?: string;
 
-  year!: number | null;
+  year?: number;
 
   constructor(user: User) {
     this.id = user.id;
     this.details = user.details;
+    this.login = user.login;
     this.email = user.email;
     this.phone = user.phone;
     this.telegram = user.telegram;
@@ -36,8 +39,6 @@ export class UserDto {
     this.lastName = user.lastName;
     this.patronymic = user.patronymic;
     this.isRegistered = user.isRegistered;
-    this.role = user.isAdmin ? Role.ADMIN : Role.LECTURER;
-    this.scheduleId = null;
-    this.year = null;
+    this.role = Role.ADMIN;
   }
 }
