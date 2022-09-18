@@ -52,7 +52,7 @@ export class UsersController {
     @Query() { role, page, size }: GetAllRequestDto,
   ): Promise<Page<UserDto>> {
     if (isUndefined(role) || !isAdmin(role)) {
-      return new Page({ data: [], totalElements: 0, size });
+      return new Page({ data: [], totalElements: 0 });
     }
 
     const [users, count] = await this.usersService.findAllAndCountAdmins({
@@ -64,7 +64,6 @@ export class UsersController {
     return new Page({
       data: dtos,
       totalElements: count,
-      size,
     });
   }
 
