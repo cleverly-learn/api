@@ -15,10 +15,10 @@ export class UsersRepository extends Repository<User> {
     super(User, entityManager);
   }
 
-  findAllAdmins(page?: Pageable): Promise<User[]> {
-    return this.repository.find({
+  findAllAndCountAdmins(pageable?: Pageable): Promise<[User[], number]> {
+    return this.repository.findAndCount({
       where: { isAdmin: true },
-      ...getPageableFindOptions(page),
+      ...getPageableFindOptions(pageable),
     });
   }
 }

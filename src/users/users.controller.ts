@@ -15,6 +15,7 @@ import {
 import { CreateUserRequestDto } from 'users/dto/create-user.request.dto';
 import { GetAllRequestDto } from 'users/dto/get-all.request.dto';
 import { JwtAuthGuard } from '_common/guards/jwt-auth.guard';
+import { Page } from '_common/dto/page.dto';
 import { PatchUserRequestDto } from 'users/dto/patch-user.request.dto';
 import { PatchUserResponseDto } from 'users/dto/patch-user.response.dto';
 import { Symbols, randomString } from '_common/utils/random-string';
@@ -48,15 +49,23 @@ export class UsersController {
 
   @Get()
   async getAll(
-    @Query() { role, ...page }: GetAllRequestDto,
-  ): Promise<UserDto[]> {
+    @Query() { role, page, size }: GetAllRequestDto,
+  ): Promise<Page<UserDto>> {
     if (isUndefined(role) || !isAdmin(role)) {
-      return [];
+      return new Page({ data: [], totalElements: 0, size });
     }
 
-    const users = await this.usersService.findAllAdmins(page);
+    const [users, count] = await this.usersService.findAllAndCountAdmins({
+      page,
+      size,
+    });
+    const dtos = users.map((user) => new UserDto(user));
 
-    return users.map((user) => new UserDto(user));
+    return new Page({
+      data: dtos,
+      totalElements: count,
+      size,
+    });
   }
 
   @Patch(':id')

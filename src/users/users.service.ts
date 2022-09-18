@@ -42,8 +42,8 @@ export class UsersService {
     return this.usersRepository.findOne({ where: { login }, select });
   }
 
-  findAllAdmins(page?: Pageable): Promise<User[]> {
-    return this.usersRepository.findAllAdmins(page);
+  findAllAndCountAdmins(pageable?: Pageable): Promise<[User[], number]> {
+    return this.usersRepository.findAllAndCountAdmins(pageable);
   }
 
   async delete(id: number): Promise<void> {
