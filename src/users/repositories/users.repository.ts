@@ -18,6 +18,7 @@ export class UsersRepository extends Repository<User> {
   findAllAndCountAdmins(pageable?: Pageable): Promise<[User[], number]> {
     return this.repository.findAndCount({
       where: { isAdmin: true },
+      order: { id: 'ASC' },
       ...getPageableFindOptions(pageable),
     });
   }
