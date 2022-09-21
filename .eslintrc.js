@@ -11,7 +11,6 @@ module.exports = {
   },
   plugins: [
     'prettier',
-    '@typescript-eslint/eslint-plugin',
     'unused-imports',
     'no-relative-import-paths',
     'sort-imports-es6-autofix',

@@ -11,9 +11,9 @@ import { TokenPairDto } from 'auth/dto/token-pair.dto';
 import { User } from 'users/entities/user.entity';
 import { UsersService } from 'users/users.service';
 import { addSeconds, differenceInSeconds } from 'date-fns';
-import { randomString } from '_common/utils/random-string';
 import { instanceToPlain } from 'class-transformer';
 import { isNull, isUndefined } from 'lodash';
+import { randomString } from '_common/utils/random-string';
 
 @Injectable()
 export class AuthService {
