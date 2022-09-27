@@ -36,9 +36,6 @@ module.exports = {
     'import/order': OFF,
     'import/no-default-export': ERROR,
 
-    '@typescript-eslint/interface-name-prefix': OFF,
-    '@typescript-eslint/explicit-module-boundary-types': OFF,
-
     'class-methods-use-this': OFF,
 
     'unused-imports/no-unused-imports': WARN,
