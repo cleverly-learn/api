@@ -1,8 +1,10 @@
 import { Faculty } from 'groups/entities/faculty.entity';
 import { Group } from 'groups/entities/group.entity';
 import { GroupDto } from 'schedule/dto/group.dto';
+import { GroupsRepository } from 'groups/repositories/groups.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
+import { Pageable } from '_common/types/pageable.interface';
 import { Repository } from 'typeorm';
 import { ScheduleService } from 'schedule/schedule.service';
 import { differenceBy, uniq } from 'lodash';
@@ -12,8 +14,7 @@ import { mapScheduleGroupToGroup } from 'groups/mappers/schedule-group-to-group.
 export class GroupsService {
   constructor(
     private readonly scheduleService: ScheduleService,
-    @InjectRepository(Group)
-    private readonly groupsRepository: Repository<Group>,
+    private readonly groupsRepository: GroupsRepository,
     @InjectRepository(Faculty)
     private readonly facultiesRepository: Repository<Faculty>,
   ) {}
@@ -72,5 +73,9 @@ export class GroupsService {
     );
 
     return existingGroups.concat(savedGroups);
+  }
+
+  findAllAndCount(options?: Pageable): Promise<[Group[], number]> {
+    return this.groupsRepository.findAllAndCount(options);
   }
 }
