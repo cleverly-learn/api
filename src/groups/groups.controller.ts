@@ -14,9 +14,8 @@ export class GroupsController {
   constructor(private readonly groupsService: GroupsService) {}
 
   @Post('/sync')
-  async synchronize(): Promise<GroupDto[]> {
-    const groups = await this.groupsService.synchronize();
-    return groups.map((group) => new GroupDto(group));
+  async synchronize(): Promise<void> {
+    await this.groupsService.synchronize();
   }
 
   @Get()
