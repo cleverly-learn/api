@@ -57,3 +57,15 @@ export function mockRepository(
     useValue: mockClass(Repository),
   };
 }
+
+export function mockRepositoryProvider<T, Args extends unknown[]>(
+  object: Class<T, Args>,
+): ValueProvider<MockedObject> {
+  return {
+    provide: object,
+    useValue: {
+      ...mockClass(Repository),
+      ...mockClass(object),
+    },
+  };
+}
