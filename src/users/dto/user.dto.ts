@@ -28,7 +28,10 @@ export class UserDto {
 
   year?: number;
 
-  constructor(user: User) {
+  constructor(
+    user: User,
+    options: { role: Role; scheduleId?: string; year?: number },
+  ) {
     this.id = user.id;
     this.details = user.details;
     this.login = user.login;
@@ -39,6 +42,8 @@ export class UserDto {
     this.lastName = user.lastName;
     this.patronymic = user.patronymic;
     this.isRegistered = user.isRegistered;
-    this.role = Role.ADMIN;
+    this.role = options.role;
+    this.scheduleId = options.scheduleId;
+    this.year = options.year;
   }
 }

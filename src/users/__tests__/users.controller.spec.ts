@@ -1,10 +1,12 @@
 import * as randomString from '_common/utils/random-string';
 import { AuthService } from 'auth/auth.service';
+import { Role } from '_common/enums/role.enum';
 import { Test } from '@nestjs/testing';
 import { User } from 'users/entities/user.entity';
 import { UsersController } from 'users/users.controller';
 import { UsersService } from 'users/users.service';
 import { mockProvider } from '_common/utils/test-helpers';
+import { omit } from 'lodash';
 
 describe('UsersController', () => {
   let usersController: UsersController;
@@ -51,7 +53,7 @@ describe('UsersController', () => {
         password: 'password',
         email: 'email',
         isRegistered: true,
-        isAdmin: true,
+        role: Role.ADMIN,
         firstName: 'first',
         lastName: 'last',
         patronymic: 'patron',
@@ -68,12 +70,13 @@ describe('UsersController', () => {
         randomString.Symbols.LATIN_LETTERS,
       );
       expect(createSpy).toBeCalledWith({
-        ...dto,
+        ...omit(dto, 'role'),
         login,
         password: hash,
         phone: '',
         telegram: '',
         details: '',
+        isAdmin: true,
       });
     });
   });

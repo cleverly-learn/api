@@ -4,7 +4,7 @@ import { Faculty } from 'groups/entities/faculty.entity';
 @Entity('groups')
 export class Group {
   @PrimaryGeneratedColumn()
-  id!: string;
+  id!: number;
 
   @Column({ unique: true })
   scheduleId!: string;

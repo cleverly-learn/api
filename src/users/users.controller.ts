@@ -18,12 +18,12 @@ import { JwtAuthGuard } from '_common/guards/jwt-auth.guard';
 import { Page } from '_common/dto/page.dto';
 import { PatchUserRequestDto } from 'users/dto/patch-user.request.dto';
 import { PatchUserResponseDto } from 'users/dto/patch-user.response.dto';
+import { Role, isAdmin } from '_common/enums/role.enum';
 import { Symbols, randomString } from '_common/utils/random-string';
 import { UserDto } from 'users/dto/user.dto';
 import { UserId } from 'auth/decorators/user.decorators';
 import { UsersService } from 'users/users.service';
 import { ValidateUserIdPipe } from '_common/pipes/validate-user-id.pipe';
-import { isAdmin } from '_common/enums/role.enum';
 import { isEqual, isUndefined } from 'lodash';
 
 @Controller('users')
@@ -36,7 +36,7 @@ export class UsersController {
   @Get('me')
   async getCurrentUser(@UserId() userId: number): Promise<UserDto> {
     const user = await this.usersService.findOneById(userId);
-    return new UserDto(user);
+    return new UserDto(user, { role: Role.ADMIN });
   }
 
   @Patch('me')
@@ -59,7 +59,7 @@ export class UsersController {
       page,
       size,
     });
-    const dtos = users.map((user) => new UserDto(user));
+    const dtos = users.map((user) => new UserDto(user, { role }));
 
     return new Page({
       data: dtos,
@@ -79,8 +79,10 @@ export class UsersController {
   }
 
   @Post()
-  async create(@Body() createUserDto: CreateUserRequestDto): Promise<UserDto> {
-    const protectedDto = await AuthService.withHashedPassword(createUserDto);
+  async create(
+    @Body() { role, ...dto }: CreateUserRequestDto,
+  ): Promise<UserDto> {
+    const protectedDto = await AuthService.withHashedPassword(dto);
     const user = await this.usersService.create({
       ...protectedDto,
       login: randomString(10, Symbols.LATIN_LETTERS),
@@ -88,9 +90,10 @@ export class UsersController {
       phone: '',
       telegram: '',
       details: '',
+      isAdmin: role === Role.ADMIN,
     });
 
-    return new UserDto(user);
+    return new UserDto(user, { role });
   }
 
   @Delete(':id')
