@@ -39,15 +39,15 @@ describe('AuthService', () => {
 
   describe('createDefaultAdminIfNeeded', () => {
     it('Expected: Admin is searched with id 1', async () => {
-      const existsSpy = jest.spyOn(usersService, 'existsById');
+      const existsSpy = jest.spyOn(usersService, 'existsByLogin');
 
       await authService.createDefaultAdminIfNeeded();
 
-      expect(existsSpy).toBeCalledWith(1);
+      expect(existsSpy).toBeCalledWith('admin');
     });
 
     it('When: Admin exists. Expected: New user is not created', async () => {
-      usersService.existsById = jest.fn().mockResolvedValue(true);
+      usersService.existsByLogin = jest.fn().mockResolvedValue(true);
       const createSpy = jest.spyOn(usersService, 'put');
 
       await authService.createDefaultAdminIfNeeded();
@@ -56,7 +56,7 @@ describe('AuthService', () => {
     });
 
     it('When: Admin is not exists. Expected: New user created', async () => {
-      usersService.findOneById = jest.fn().mockResolvedValue(false);
+      usersService.existsByLogin = jest.fn().mockResolvedValue(false);
       const createSpy = jest.spyOn(usersService, 'put');
 
       await authService.createDefaultAdminIfNeeded();
@@ -255,6 +255,22 @@ describe('AuthService', () => {
         ...object,
         password: hash,
       });
+    });
+  });
+
+  describe('generateLogin', () => {
+    it('Expected: Random string called with proper arguments', () => {
+      const randomStringSpy = jest
+        .spyOn(randomStringUtil, 'randomString')
+        .mockReturnValue('test');
+
+      const actual = AuthService.generateLogin();
+
+      expect(actual).toBe('test');
+      expect(randomStringSpy).toBeCalledWith(
+        10,
+        randomStringUtil.Symbols.LATIN_LETTERS,
+      );
     });
   });
 });

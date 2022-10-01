@@ -33,27 +33,32 @@ export class AuthService {
   }
 
   async createDefaultAdminIfNeeded(): Promise<void> {
-    const existsDefaultAdmin = await this.usersService.existsById(1);
+    const defaultName = 'admin';
+
+    const existsDefaultAdmin = await this.usersService.existsByLogin(
+      defaultName,
+    );
 
     if (existsDefaultAdmin) {
       return;
     }
 
-    const defaultName = 'admin';
+    const protectedUser = await AuthService.withHashedPassword({
+      id: 1,
+      login: defaultName,
+      password: defaultName,
+      firstName: defaultName,
+      lastName: '',
+      patronymic: '',
+      email: '',
+      isAdmin: true,
+      isRegistered: true,
+      details: '',
+      phone: '',
+      telegram: '',
+    });
 
-    const admin = new User();
-    admin.id = 1;
-    admin.login = defaultName;
-    admin.password = defaultName;
-    admin.lastName = defaultName;
-    admin.firstName = defaultName;
-    admin.patronymic = defaultName;
-    admin.isAdmin = true;
-    admin.isRegistered = true;
-
-    const protectedAdmin = await AuthService.withHashedPassword(admin);
-
-    await this.usersService.put(protectedAdmin);
+    await this.usersService.put(protectedUser);
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
