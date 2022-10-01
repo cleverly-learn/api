@@ -7,8 +7,8 @@ import { Injectable } from '@nestjs/common';
 import { Pageable } from '_common/types/pageable.interface';
 import { Repository } from 'typeorm';
 import { ScheduleService } from 'schedule/schedule.service';
-import { differenceBy, uniq } from 'lodash';
-import { mapScheduleGroupToGroup } from 'groups/mappers/schedule-group-to-group.mapper';
+import { differenceBy, isEmpty, uniq } from 'lodash';
+import { mapScheduleDtoToEntity } from 'groups/mappers/groups.mapper';
 
 @Injectable()
 export class GroupsService {
@@ -46,6 +46,11 @@ export class GroupsService {
       existingFaculties,
       'name',
     );
+
+    if (isEmpty(notExistantFaculties)) {
+      return existingFaculties;
+    }
+
     const savedFaculties = await this.facultiesRepository.save(
       notExistantFaculties,
     );
@@ -54,20 +59,25 @@ export class GroupsService {
   }
 
   private async syncGroupsAndFindAll(
-    fetchedGroups: GroupDto[],
+    fetchedScheduleGroups: GroupDto[],
     existingGroups: Group[],
     faculties: Faculty[],
   ): Promise<Group[]> {
-    const newGroups = fetchedGroups.map(mapScheduleGroupToGroup);
-    const notExistantGroups = differenceBy(
-      newGroups,
+    const fetchedGroups = fetchedScheduleGroups.map(mapScheduleDtoToEntity);
+    const notExistingGroups = differenceBy(
+      fetchedGroups,
       existingGroups,
       'scheduleId',
     );
-    const notExistantGroupsWithFaculties = notExistantGroups.map((group) => ({
+    const notExistantGroupsWithFaculties = notExistingGroups.map((group) => ({
       ...group,
       faculty: faculties.find(({ name }) => name === group.faculty.name),
     }));
+
+    if (isEmpty(notExistingGroups)) {
+      return existingGroups;
+    }
+
     const savedGroups = await this.groupsRepository.save(
       notExistantGroupsWithFaculties,
     );

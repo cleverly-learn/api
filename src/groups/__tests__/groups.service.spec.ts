@@ -34,7 +34,7 @@ describe('GroupsService', () => {
   });
 
   describe('synchronize', () => {
-    it('When: No new faculties. Expected: No faculties saved', async () => {
+    it('When: No new faculties. Expected: Faculties are not saving', async () => {
       scheduleService.getGroups = jest.fn().mockResolvedValue([]);
       facultiesRepository.find = jest.fn().mockResolvedValue([]);
       groupsRepository.find = jest.fn().mockResolvedValue([]);
@@ -42,7 +42,7 @@ describe('GroupsService', () => {
 
       await groupsService.synchronize();
 
-      expect(saveSpy).toBeCalledWith([]);
+      expect(saveSpy).not.toBeCalled();
     });
 
     it('When: New faculties exist. Expected: Save faculties', async () => {
@@ -59,7 +59,7 @@ describe('GroupsService', () => {
       expect(saveSpy).toBeCalledWith([{ name: 'f1' }, { name: 'f2' }]);
     });
 
-    it('When: No new groups. Expected: No groups saved', async () => {
+    it('When: No new groups. Expected: Groups are not saving', async () => {
       scheduleService.getGroups = jest.fn().mockResolvedValue([]);
       facultiesRepository.find = jest.fn().mockResolvedValue([]);
       groupsRepository.find = jest.fn().mockResolvedValue([]);
@@ -67,7 +67,7 @@ describe('GroupsService', () => {
 
       await groupsService.synchronize();
 
-      expect(saveSpy).toBeCalledWith([]);
+      expect(saveSpy).not.toBeCalled();
     });
 
     it('When: New groups exist with new and old faculties. Expected: Save groups with faculties', async () => {
