@@ -19,6 +19,10 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
+  batchCreate(users: CreateParams[]): Promise<User[]> {
+    return this.usersRepository.save(users);
+  }
+
   async patch(id: number, user: PatchParams): Promise<PatchReturnValue> {
     return this.usersRepository.save({ id, ...user });
   }

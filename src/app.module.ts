@@ -1,6 +1,7 @@
 import { AuthModule } from 'auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GroupsModule } from 'groups/groups.module';
+import { LecturersModule } from 'lecturers/lecturers.module';
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from 'schedule/schedule.module';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
@@ -32,6 +33,7 @@ import { UsersModule } from 'users/users.module';
     AuthModule,
     GroupsModule,
     ScheduleModule,
+    LecturersModule,
   ],
 })
 export class AppModule {}

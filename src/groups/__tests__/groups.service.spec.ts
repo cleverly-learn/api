@@ -48,7 +48,11 @@ describe('GroupsService', () => {
     it('When: New faculties exist. Expected: Save faculties', async () => {
       scheduleService.getGroups = jest
         .fn()
-        .mockResolvedValue([{ faculty: 'f1' }, { faculty: 'f2' }]);
+        .mockResolvedValue([
+          { faculty: 'f1' },
+          { faculty: 'f2' },
+          { faculty: 'f3' },
+        ]);
       facultiesRepository.find = jest.fn().mockResolvedValue([{ name: 'f3' }]);
       groupsRepository.find = jest.fn().mockResolvedValue([]);
       facultiesRepository.save = jest.fn().mockResolvedValue([]);
