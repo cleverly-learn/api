@@ -44,21 +44,14 @@ export class AuthService {
     }
 
     const protectedUser = await AuthService.withHashedPassword({
-      id: 1,
       login: defaultName,
       password: defaultName,
       firstName: defaultName,
-      lastName: '',
-      patronymic: '',
-      email: '',
       isAdmin: true,
       isRegistered: true,
-      details: '',
-      phone: '',
-      telegram: '',
     });
 
-    await this.usersService.put(protectedUser);
+    await this.usersService.create(protectedUser);
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)

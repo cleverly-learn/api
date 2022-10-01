@@ -7,18 +7,15 @@ import { UsersRepository } from 'users/repositories/users.repository';
 type PatchParams = Partial<
   Pick<User, 'firstName' | 'lastName' | 'patronymic' | 'login' | 'password'>
 >;
-type PatchReturnValue = Partial<Pick<User, 'id'>> &
-  Omit<PatchParams, 'password'>;
+type PatchReturnValue = Partial<Pick<User, 'id'>> & PatchParams;
+
+type CreateParams = Partial<Omit<User, 'id'>> & Pick<User, 'login'>;
 
 @Injectable()
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
-  create(user: Omit<User, 'id'>): Promise<User> {
-    return this.usersRepository.save(user);
-  }
-
-  put(user: User): Promise<User> {
+  create(user: CreateParams): Promise<User> {
     return this.usersRepository.save(user);
   }
 
@@ -28,6 +25,11 @@ export class UsersService {
 
   async existsById(id: number): Promise<boolean> {
     const count = await this.usersRepository.countBy({ id });
+    return count > 0;
+  }
+
+  async existsByLogin(login: string): Promise<boolean> {
+    const count = await this.usersRepository.countBy({ login });
     return count > 0;
   }
 

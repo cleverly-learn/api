@@ -48,7 +48,7 @@ describe('AuthService', () => {
 
     it('When: Admin exists. Expected: New user is not created', async () => {
       usersService.existsByLogin = jest.fn().mockResolvedValue(true);
-      const createSpy = jest.spyOn(usersService, 'put');
+      const createSpy = jest.spyOn(usersService, 'create');
 
       await authService.createDefaultAdminIfNeeded();
 
@@ -56,11 +56,23 @@ describe('AuthService', () => {
     });
 
     it('When: Admin is not exists. Expected: New user created', async () => {
+      const defaultAdmin = 'admin';
       usersService.existsByLogin = jest.fn().mockResolvedValue(false);
-      const createSpy = jest.spyOn(usersService, 'put');
+      const createSpy = jest.spyOn(usersService, 'create');
+      const withHashedPasswordSpy = jest.spyOn(
+        AuthService,
+        'withHashedPassword',
+      );
 
       await authService.createDefaultAdminIfNeeded();
 
+      expect(withHashedPasswordSpy).toBeCalledWith({
+        login: defaultAdmin,
+        password: defaultAdmin,
+        firstName: defaultAdmin,
+        isRegistered: true,
+        isAdmin: true,
+      });
       expect(createSpy).toBeCalled();
     });
   });

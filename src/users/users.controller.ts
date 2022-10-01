@@ -86,9 +86,6 @@ export class UsersController {
       ...protectedDto,
       login: AuthService.generateLogin(),
       email: protectedDto.email ?? '',
-      phone: '',
-      telegram: '',
-      details: '',
       isAdmin: role === Role.ADMIN,
     });
 

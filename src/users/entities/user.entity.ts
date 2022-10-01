@@ -10,10 +10,10 @@ export class User {
   login!: string;
 
   @Exclude()
-  @Column()
+  @Column({ default: '' })
   password!: string;
 
-  @Column()
+  @Column({ default: '' })
   email!: string;
 
   @Column({ default: false })
@@ -22,21 +22,21 @@ export class User {
   @Column({ default: false })
   isAdmin!: boolean;
 
-  @Column()
+  @Column({ default: '' })
   firstName!: string;
 
-  @Column()
+  @Column({ default: '' })
   lastName!: string;
 
-  @Column()
+  @Column({ default: '' })
   patronymic!: string;
 
-  @Column()
+  @Column({ default: '' })
   phone!: string;
 
-  @Column()
+  @Column({ default: '' })
   telegram!: string;
 
-  @Column()
+  @Column({ default: '' })
   details!: string;
 }
