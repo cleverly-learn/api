@@ -69,9 +69,6 @@ describe('UsersController', () => {
         ...omit(dto, 'role'),
         login,
         password: hash,
-        phone: '',
-        telegram: '',
-        details: '',
         isAdmin: true,
       });
     });
