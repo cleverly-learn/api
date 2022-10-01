@@ -19,7 +19,6 @@ import { Page } from '_common/dto/page.dto';
 import { PatchUserRequestDto } from 'users/dto/patch-user.request.dto';
 import { PatchUserResponseDto } from 'users/dto/patch-user.response.dto';
 import { Role, isAdmin } from '_common/enums/role.enum';
-import { Symbols, randomString } from '_common/utils/random-string';
 import { UserDto } from 'users/dto/user.dto';
 import { UserId } from 'auth/decorators/user.decorators';
 import { UsersService } from 'users/users.service';
@@ -85,7 +84,7 @@ export class UsersController {
     const protectedDto = await AuthService.withHashedPassword(dto);
     const user = await this.usersService.create({
       ...protectedDto,
-      login: randomString(10, Symbols.LATIN_LETTERS),
+      login: AuthService.generateLogin(),
       email: protectedDto.email ?? '',
       phone: '',
       telegram: '',

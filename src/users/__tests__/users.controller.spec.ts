@@ -1,4 +1,3 @@
-import * as randomString from '_common/utils/random-string';
 import { AuthService } from 'auth/auth.service';
 import { Role } from '_common/enums/role.enum';
 import { Test } from '@nestjs/testing';
@@ -46,8 +45,8 @@ describe('UsersController', () => {
       const hash = 'hashed';
       const hashSpy = jest.spyOn(AuthService, 'hash').mockResolvedValue(hash);
       const login = 'randomLogin';
-      const randomStringSpy = jest
-        .spyOn(randomString, 'randomString')
+      const generateLoginSpy = jest
+        .spyOn(AuthService, 'generateLogin')
         .mockReturnValue(login);
       const dto = {
         password: 'password',
@@ -65,10 +64,7 @@ describe('UsersController', () => {
       await usersController.create(dto);
 
       expect(hashSpy).toBeCalledWith(dto.password);
-      expect(randomStringSpy).toBeCalledWith(
-        10,
-        randomString.Symbols.LATIN_LETTERS,
-      );
+      expect(generateLoginSpy).toBeCalled();
       expect(createSpy).toBeCalledWith({
         ...omit(dto, 'role'),
         login,

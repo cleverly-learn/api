@@ -7,13 +7,13 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtTokenPayload } from 'auth/helpers/jwt-token-payload';
 import { LessThan, Repository } from 'typeorm';
 import { RefreshToken } from 'auth/entities/refresh-token.entity';
+import { Symbols, randomString } from '_common/utils/random-string';
 import { TokenPairDto } from 'auth/dto/token-pair.dto';
 import { User } from 'users/entities/user.entity';
 import { UsersService } from 'users/users.service';
 import { addSeconds, differenceInSeconds } from 'date-fns';
 import { instanceToPlain } from 'class-transformer';
 import { isNull, isUndefined } from 'lodash';
-import { randomString } from '_common/utils/random-string';
 
 @Injectable()
 export class AuthService {
@@ -41,22 +41,19 @@ export class AuthService {
 
     const defaultName = 'admin';
 
-    const protectedUser = await AuthService.withHashedPassword({
-      id: 1,
-      login: defaultName,
-      password: defaultName,
-      firstName: defaultName,
-      lastName: '',
-      patronymic: '',
-      email: '',
-      isAdmin: true,
-      isRegistered: true,
-      details: '',
-      phone: '',
-      telegram: '',
-    });
+    const admin = new User();
+    admin.id = 1;
+    admin.login = defaultName;
+    admin.password = defaultName;
+    admin.lastName = defaultName;
+    admin.firstName = defaultName;
+    admin.patronymic = defaultName;
+    admin.isAdmin = true;
+    admin.isRegistered = true;
 
-    await this.usersService.put(protectedUser);
+    const protectedAdmin = await AuthService.withHashedPassword(admin);
+
+    await this.usersService.put(protectedAdmin);
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
@@ -81,6 +78,10 @@ export class AuthService {
       ...user,
       password: await AuthService.hash(user.password),
     };
+  }
+
+  static generateLogin(): string {
+    return randomString(10, Symbols.LATIN_LETTERS);
   }
 
   async register(user: Omit<User, 'id'>): Promise<User> {
