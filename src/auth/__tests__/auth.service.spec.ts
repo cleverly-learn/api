@@ -10,6 +10,7 @@ import { User } from 'users/entities/user.entity';
 import { UsersService } from 'users/users.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { mockProvider, mockRepository } from '_common/utils/test-helpers';
+import { range, uniq } from 'lodash';
 import bcrypt from 'bcrypt';
 
 describe('AuthService', () => {
@@ -37,6 +38,10 @@ describe('AuthService', () => {
     configService = module.get(ConfigService);
   });
 
+  beforeEach(() => {
+    jest.restoreAllMocks();
+  });
+
   describe('createDefaultAdminIfNeeded', () => {
     it('Expected: Admin is searched with id 1', async () => {
       const existsSpy = jest.spyOn(usersService, 'existsByLogin');
@@ -59,13 +64,13 @@ describe('AuthService', () => {
       const defaultAdmin = 'admin';
       usersService.existsByLogin = jest.fn().mockResolvedValue(false);
       const createSpy = jest.spyOn(usersService, 'create');
-      const withHashedPasswordSpy = jest.spyOn(
-        AuthService,
-        'withHashedPassword',
-      );
+      const withHashedPasswordSpy = jest
+        .spyOn(AuthService, 'withHashedPassword')
+        .mockResolvedValue({ test: 'test' } as unknown as User);
 
       await authService.createDefaultAdminIfNeeded();
 
+      expect(createSpy).toBeCalledWith({ test: 'test' });
       expect(withHashedPasswordSpy).toBeCalledWith({
         login: defaultAdmin,
         password: defaultAdmin,
@@ -283,6 +288,12 @@ describe('AuthService', () => {
         10,
         randomStringUtil.Symbols.LATIN_LETTERS,
       );
+    });
+
+    it('When: 100000 random logins created. Expected: All unique', () => {
+      const logins = range(100000).map(() => AuthService.generateLogin());
+
+      expect(logins.length).toBe(uniq(logins).length);
     });
   });
 });

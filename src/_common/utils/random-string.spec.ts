@@ -1,5 +1,5 @@
 import { Symbols, randomString } from '_common/utils/random-string';
-import { intersection } from 'lodash';
+import { intersection, uniq } from 'lodash';
 
 describe('randomString', () => {
   it('When: Length less or equal 0. Expected: Empty string', () => {
@@ -12,15 +12,15 @@ describe('randomString', () => {
   });
 
   it('When: Function called several times. Expected: Unique result each time', () => {
-    [
+    const results = [
       randomString(10),
       randomString(10),
       randomString(10),
       randomString(10),
       randomString(10),
-    ].forEach((str, i, results) =>
-      expect(results.filter((value) => value === str).length).toBe(1),
-    );
+    ];
+
+    expect(results.length).toBe(uniq(results).length);
   });
 
   it('When: No symbols set provided. Expected: All symbols mixed', () => {
