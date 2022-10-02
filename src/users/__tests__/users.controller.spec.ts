@@ -1,4 +1,5 @@
 import { AuthService } from 'auth/auth.service';
+import { LecturersService } from 'lecturers/lecturers.service';
 import { Role } from '_common/enums/role.enum';
 import { Test } from '@nestjs/testing';
 import { User } from 'users/entities/user.entity';
@@ -13,7 +14,11 @@ describe('UsersController', () => {
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
-      providers: [mockProvider(UsersService), UsersController],
+      providers: [
+        mockProvider(UsersService),
+        mockProvider(LecturersService),
+        UsersController,
+      ],
     }).compile();
 
     usersController = module.get(UsersController);
