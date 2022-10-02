@@ -1,8 +1,10 @@
 import { FindOptionsSelect } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { Pageable } from '_common/types/pageable.interface';
+import { PassThrough } from 'stream';
 import { User } from 'users/entities/user.entity';
 import { UsersRepository } from 'users/repositories/users.repository';
+import ExcelJs from 'exceljs';
 
 type PatchParams = Partial<
   Pick<User, 'firstName' | 'lastName' | 'patronymic' | 'login' | 'password'>
@@ -19,7 +21,7 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  batchCreate(users: CreateParams[]): Promise<User[]> {
+  bulkPut(users: User[]): Promise<User[]> {
     return this.usersRepository.save(users);
   }
 
@@ -54,5 +56,35 @@ export class UsersService {
 
   async delete(id: number): Promise<void> {
     await this.usersRepository.delete(id);
+  }
+
+  async createExcelFromUsers(users: User[]): Promise<PassThrough> {
+    const workbook = new ExcelJs.Workbook();
+    const sheet = workbook.addWorksheet('Паролі');
+    sheet.columns = [
+      {
+        header: 'ФІО',
+        width: 30,
+      },
+      {
+        header: 'Логін',
+        width: 15,
+      },
+      {
+        header: 'Пароль',
+        width: 15,
+      },
+    ];
+    const rows = users.map((user) => [
+      `${user.lastName} ${user.firstName} ${user.patronymic}`,
+      user.login,
+      user.password,
+    ]);
+    sheet.addRows(rows);
+
+    const stream = new PassThrough();
+    await workbook.xlsx.write(stream);
+
+    return stream;
   }
 }

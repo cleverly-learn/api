@@ -1,19 +1,20 @@
-import { InjectRepository } from '@nestjs/typeorm';
+import { AuthService } from 'auth/auth.service';
 import { Injectable } from '@nestjs/common';
 import { Lecturer } from 'lecturers/entities/lecturer.entity';
-import { Repository } from 'typeorm';
+import { LecturersRepository } from 'lecturers/repositories/lecturers.repository';
 import { ScheduleService } from 'schedule/schedule.service';
+import { User } from 'users/entities/user.entity';
 import { UsersService } from 'users/users.service';
 import { differenceWith, isEmpty } from 'lodash';
 import { mapScheduleDtoToNewLecturer } from 'lecturers/mappers/lecturers.mapper';
+import { randomString } from '_common/utils/random-string';
 
 @Injectable()
 export class LecturersService {
   constructor(
     private readonly scheduleService: ScheduleService,
     private readonly usersService: UsersService,
-    @InjectRepository(Lecturer)
-    private readonly lecturersRepository: Repository<Lecturer>,
+    private readonly lecturersRepository: LecturersRepository,
   ) {}
 
   async synchronize(): Promise<Lecturer[]> {
@@ -34,7 +35,7 @@ export class LecturersService {
     const notExistingNewLecturers = notExistingLecturers.map(
       mapScheduleDtoToNewLecturer,
     );
-    const savedUsers = await this.usersService.batchCreate(
+    const savedUsers = await this.usersService.bulkPut(
       notExistingNewLecturers.map(({ user }) => user),
     );
     const lecturersWithSavedUsers = notExistingNewLecturers.map((lecturer) => ({
@@ -47,5 +48,27 @@ export class LecturersService {
     );
 
     return existingLecturers.concat(savedLecturers);
+  }
+
+  async exportNonRegisteredToExcel() {
+    const lecturers = await this.lecturersRepository.findAllNotRegistered();
+    const usersWithPasswords = lecturers.map(({ user }) => ({
+      ...user,
+      password: randomString(10),
+    }));
+
+    if (usersWithPasswords.length) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      this.hashAndUpdateUsers(usersWithPasswords);
+    }
+
+    return this.usersService.createExcelFromUsers(usersWithPasswords);
+  }
+
+  private async hashAndUpdateUsers(users: User[]): Promise<User[]> {
+    const hashedUsers = await Promise.all(
+      users.map((user) => AuthService.withHashedPassword(user)),
+    );
+    return this.usersService.bulkPut(hashedUsers);
   }
 }
