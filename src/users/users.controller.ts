@@ -15,10 +15,12 @@ import {
 import { CreateUserRequestDto } from 'users/dto/create-user.request.dto';
 import { GetAllRequestDto } from 'users/dto/get-all.request.dto';
 import { JwtAuthGuard } from '_common/guards/jwt-auth.guard';
+import { LecturersService } from 'lecturers/lecturers.service';
 import { Page } from '_common/dto/page.dto';
 import { PatchUserRequestDto } from 'users/dto/patch-user.request.dto';
 import { PatchUserResponseDto } from 'users/dto/patch-user.response.dto';
-import { Role, isAdmin } from '_common/enums/role.enum';
+import { Role, isStudent } from '_common/enums/role.enum';
+import { User } from 'users/entities/user.entity';
 import { UserDto } from 'users/dto/user.dto';
 import { UserId } from 'auth/decorators/user.decorators';
 import { UsersService } from 'users/users.service';
@@ -30,7 +32,10 @@ import { isEqual, isUndefined } from 'lodash';
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly lecturersService: LecturersService,
+  ) {}
 
   @Get('me')
   async getCurrentUser(@UserId() userId: number): Promise<UserDto> {
@@ -50,20 +55,34 @@ export class UsersController {
   async getAll(
     @Query() { role, page, size }: GetAllRequestDto,
   ): Promise<Page<UserDto>> {
-    if (isUndefined(role) || !isAdmin(role)) {
+    if (isUndefined(role) || isStudent(role)) {
       return new Page({ data: [], totalElements: 0 });
     }
 
-    const [users, count] = await this.usersService.findAllAndCountAdmins({
-      page,
-      size,
-    });
+    const pageable = { page, size };
+
+    const [users, count] = await {
+      [Role.ADMIN]: this.usersService.findAllAndCountAdmins(pageable),
+      [Role.LECTURER]: this.toUsersAndCountPromise(
+        this.lecturersService.findAllAndCount(pageable),
+      ),
+    }[role];
+
     const dtos = users.map((user) => new UserDto(user, { role }));
 
     return new Page({
       data: dtos,
       totalElements: count,
     });
+  }
+
+  private toUsersAndCountPromise<T extends { user: User }>(
+    promise: Promise<[T[], number]>,
+  ): Promise<[User[], number]> {
+    return promise.then(([userables, count]) => [
+      userables.map(({ user }) => user),
+      count,
+    ]);
   }
 
   @Patch(':id')

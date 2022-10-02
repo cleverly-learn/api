@@ -2,6 +2,7 @@ import { AuthService } from 'auth/auth.service';
 import { Injectable } from '@nestjs/common';
 import { Lecturer } from 'lecturers/entities/lecturer.entity';
 import { LecturersRepository } from 'lecturers/repositories/lecturers.repository';
+import { Pageable } from '_common/types/pageable.interface';
 import { ScheduleService } from 'schedule/schedule.service';
 import { User } from 'users/entities/user.entity';
 import { UsersService } from 'users/users.service';
@@ -70,5 +71,9 @@ export class LecturersService {
       users.map((user) => AuthService.withHashedPassword(user)),
     );
     return this.usersService.bulkPut(hashedUsers);
+  }
+
+  findAllAndCount(pageable?: Pageable): Promise<[Lecturer[], number]> {
+    return this.lecturersRepository.findAllAndCount(pageable);
   }
 }
