@@ -1,5 +1,6 @@
 import { AuthModule } from 'auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { FacultiesModule } from 'faculties/faculties.module';
 import { GroupsModule } from 'groups/groups.module';
 import { LecturersModule } from 'lecturers/lecturers.module';
 import { Module } from '@nestjs/common';
@@ -34,6 +35,7 @@ import { UsersModule } from 'users/users.module';
     GroupsModule,
     ScheduleModule,
     LecturersModule,
+    FacultiesModule,
   ],
 })
 export class AppModule {}

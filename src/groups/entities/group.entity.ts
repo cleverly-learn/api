@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Faculty } from 'groups/entities/faculty.entity';
+import { Faculty } from 'faculties/entities/faculty.entity';
 
 @Entity('groups')
 export class Group {

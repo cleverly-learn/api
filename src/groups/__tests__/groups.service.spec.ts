@@ -1,13 +1,10 @@
-import { Faculty } from 'groups/entities/faculty.entity';
+import { FacultiesService } from 'faculties/faculties.service';
 import { GroupsRepository } from 'groups/repositories/groups.repository';
 import { GroupsService } from 'groups/groups.service';
-import { Repository } from 'typeorm';
 import { ScheduleService } from 'schedule/schedule.service';
 import { Test } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import {
   mockProvider,
-  mockRepository,
   mockRepositoryProvider,
 } from '_common/utils/test-helpers';
 
@@ -15,30 +12,30 @@ describe('GroupsService', () => {
   let groupsService: GroupsService;
   let scheduleService: ScheduleService;
   let groupsRepository: GroupsRepository;
-  let facultiesRepository: Repository<Faculty>;
+  let facultiesService: FacultiesService;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       providers: [
         GroupsService,
         mockProvider(ScheduleService),
+        mockProvider(FacultiesService),
         mockRepositoryProvider(GroupsRepository),
-        mockRepository(Faculty),
       ],
     }).compile();
 
     groupsService = module.get(GroupsService);
     scheduleService = module.get(ScheduleService);
+    facultiesService = module.get(FacultiesService);
     groupsRepository = module.get(GroupsRepository);
-    facultiesRepository = module.get(getRepositoryToken(Faculty));
   });
 
   describe('synchronize', () => {
     it('When: No new faculties. Expected: Faculties are not saving', async () => {
       scheduleService.getGroups = jest.fn().mockResolvedValue([]);
-      facultiesRepository.find = jest.fn().mockResolvedValue([]);
+      facultiesService.findAll = jest.fn().mockResolvedValue([]);
       groupsRepository.find = jest.fn().mockResolvedValue([]);
-      const saveSpy = jest.spyOn(facultiesRepository, 'save');
+      const saveSpy = jest.spyOn(facultiesService, 'create');
 
       await groupsService.synchronize();
 
@@ -53,10 +50,10 @@ describe('GroupsService', () => {
           { faculty: 'f2' },
           { faculty: 'f3' },
         ]);
-      facultiesRepository.find = jest.fn().mockResolvedValue([{ name: 'f3' }]);
+      facultiesService.findAll = jest.fn().mockResolvedValue([{ name: 'f3' }]);
       groupsRepository.find = jest.fn().mockResolvedValue([]);
-      facultiesRepository.save = jest.fn().mockResolvedValue([]);
-      const saveSpy = jest.spyOn(facultiesRepository, 'save');
+      facultiesService.create = jest.fn().mockResolvedValue([]);
+      const saveSpy = jest.spyOn(facultiesService, 'create');
 
       await groupsService.synchronize();
 
@@ -65,7 +62,7 @@ describe('GroupsService', () => {
 
     it('When: No new groups. Expected: Groups are not saving', async () => {
       scheduleService.getGroups = jest.fn().mockResolvedValue([]);
-      facultiesRepository.find = jest.fn().mockResolvedValue([]);
+      facultiesService.findAll = jest.fn().mockResolvedValue([]);
       groupsRepository.find = jest.fn().mockResolvedValue([]);
       const saveSpy = jest.spyOn(groupsRepository, 'save');
 
@@ -79,15 +76,15 @@ describe('GroupsService', () => {
         { faculty: 'f1', id: '1', name: 'g1' },
         { faculty: 'f2', id: '2', name: 'g2' },
       ]);
-      facultiesRepository.find = jest
+      facultiesService.findAll = jest
         .fn()
         .mockResolvedValue([{ id: 1, name: 'f1' }]);
       const existantGroups = [{ email: '', scheduleId: '3', name: 'g3' }];
       groupsRepository.find = jest.fn().mockResolvedValue(existantGroups);
-      facultiesRepository.save = jest
+      facultiesService.create = jest
         .fn()
         .mockResolvedValue([{ id: 2, name: 'f2' }]);
-      const facultiesSaveSpy = jest.spyOn(facultiesRepository, 'save');
+      const facultiesSaveSpy = jest.spyOn(facultiesService, 'create');
       const groupsToSave = [
         {
           faculty: {

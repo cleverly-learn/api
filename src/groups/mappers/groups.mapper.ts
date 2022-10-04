@@ -1,4 +1,4 @@
-import { Faculty } from 'groups/entities/faculty.entity';
+import { Faculty } from 'faculties/entities/faculty.entity';
 import { Group } from 'groups/entities/group.entity';
 import { GroupDto } from 'schedule/dto/group.dto';
 

@@ -1,11 +1,10 @@
-import { Faculty } from 'groups/entities/faculty.entity';
+import { FacultiesService } from 'faculties/faculties.service';
+import { Faculty } from 'faculties/entities/faculty.entity';
 import { Group } from 'groups/entities/group.entity';
 import { GroupDto } from 'schedule/dto/group.dto';
 import { GroupsRepository } from 'groups/repositories/groups.repository';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import { Pageable } from '_common/types/pageable.interface';
-import { Repository } from 'typeorm';
 import { ScheduleService } from 'schedule/schedule.service';
 import { differenceBy, isEmpty, uniq } from 'lodash';
 import { mapScheduleDtoToEntity } from 'groups/mappers/groups.mapper';
@@ -14,15 +13,14 @@ import { mapScheduleDtoToEntity } from 'groups/mappers/groups.mapper';
 export class GroupsService {
   constructor(
     private readonly scheduleService: ScheduleService,
+    private readonly facultiesService: FacultiesService,
     private readonly groupsRepository: GroupsRepository,
-    @InjectRepository(Faculty)
-    private readonly facultiesRepository: Repository<Faculty>,
   ) {}
 
   async synchronize(): Promise<Group[]> {
     const [existingFaculties, existingGroups, fetchedGroups] =
       await Promise.all([
-        this.facultiesRepository.find(),
+        this.facultiesService.findAll(),
         this.groupsRepository.find(),
         this.scheduleService.getGroups(),
       ]);
@@ -51,7 +49,7 @@ export class GroupsService {
       return existingFaculties;
     }
 
-    const savedFaculties = await this.facultiesRepository.save(
+    const savedFaculties = await this.facultiesService.create(
       notExistantFaculties,
     );
 

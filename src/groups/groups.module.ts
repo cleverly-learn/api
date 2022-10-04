@@ -1,4 +1,4 @@
-import { Faculty } from 'groups/entities/faculty.entity';
+import { FacultiesModule } from 'faculties/faculties.module';
 import { Group } from 'groups/entities/group.entity';
 import { GroupsController } from 'groups/groups.controller';
 import { GroupsRepository } from 'groups/repositories/groups.repository';
@@ -8,7 +8,7 @@ import { ScheduleModule } from 'schedule/schedule.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Faculty, Group]), ScheduleModule],
+  imports: [TypeOrmModule.forFeature([Group]), ScheduleModule, FacultiesModule],
   controllers: [GroupsController],
   providers: [GroupsService, GroupsRepository],
 })
