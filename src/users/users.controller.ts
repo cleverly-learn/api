@@ -15,12 +15,12 @@ import {
 import { CreateUserRequestDto } from 'users/dto/create-user.request.dto';
 import { GetAllRequestDto } from 'users/dto/get-all.request.dto';
 import { JwtAuthGuard } from '_common/guards/jwt-auth.guard';
+import { Lecturer } from 'lecturers/entities/lecturer.entity';
 import { LecturersService } from 'lecturers/lecturers.service';
 import { Page } from '_common/dto/page.dto';
 import { PatchUserRequestDto } from 'users/dto/patch-user.request.dto';
 import { PatchUserResponseDto } from 'users/dto/patch-user.response.dto';
 import { Role, isStudent } from '_common/enums/role.enum';
-import { User } from 'users/entities/user.entity';
 import { UserDto } from 'users/dto/user.dto';
 import { UserId } from 'auth/decorators/user.decorators';
 import { UsersService } from 'users/users.service';
@@ -63,26 +63,23 @@ export class UsersController {
 
     const [users, count] = await {
       [Role.ADMIN]: this.usersService.findAllAndCountAdmins(pageable),
-      [Role.LECTURER]: this.toUsersAndCountPromise(
-        this.lecturersService.findAllAndCount(pageable),
-      ),
+      [Role.LECTURER]: this.lecturersService.findAllAndCount(pageable),
     }[role];
 
-    const dtos = users.map((user) => new UserDto(user, { role }));
+    const dtos = users.map((userable) => {
+      if (userable instanceof Lecturer) {
+        return new UserDto(userable.user, {
+          role,
+          scheduleId: userable.scheduleId,
+        });
+      }
+      return new UserDto(userable, { role });
+    });
 
     return new Page({
       data: dtos,
       totalElements: count,
     });
-  }
-
-  private toUsersAndCountPromise<T extends { user: User }>(
-    promise: Promise<[T[], number]>,
-  ): Promise<[User[], number]> {
-    return promise.then(([userables, count]) => [
-      userables.map(({ user }) => user),
-      count,
-    ]);
   }
 
   @Patch(':id')

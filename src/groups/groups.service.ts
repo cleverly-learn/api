@@ -88,4 +88,13 @@ export class GroupsService {
   ): Promise<[Group[], number]> {
     return this.groupsRepository.findAllAndCount(options);
   }
+
+  async existsById(id: number): Promise<boolean> {
+    const count = await this.groupsRepository.countBy({ id });
+    return count > 0;
+  }
+
+  findById(id: number): Promise<Group> {
+    return this.groupsRepository.findOneByOrFail({ id });
+  }
 }

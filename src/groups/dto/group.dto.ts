@@ -7,13 +7,10 @@ export class GroupDto {
 
   scheduleId!: string;
 
-  email!: string;
-
   faculty!: string;
 
   constructor(group: Group) {
     this.id = group.id;
-    this.email = group.email;
     this.faculty = group.faculty.name;
     this.name = group.name;
     this.scheduleId = group.scheduleId;

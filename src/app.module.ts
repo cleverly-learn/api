@@ -6,6 +6,7 @@ import { LecturersModule } from 'lecturers/lecturers.module';
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from 'schedule/schedule.module';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { StudentsModule } from 'students/students.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from 'users/users.module';
 
@@ -36,6 +37,7 @@ import { UsersModule } from 'users/users.module';
     ScheduleModule,
     LecturersModule,
     FacultiesModule,
+    StudentsModule,
   ],
 })
 export class AppModule {}

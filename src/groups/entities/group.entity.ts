@@ -1,5 +1,12 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Faculty } from 'faculties/entities/faculty.entity';
+import { Student } from 'students/entities/student.entity';
 
 @Entity('groups')
 export class Group {
@@ -15,6 +22,6 @@ export class Group {
   @ManyToOne(() => Faculty, { eager: true })
   faculty!: Faculty;
 
-  @Column({ default: '' })
-  email!: string;
+  @OneToMany(() => Student, (student) => student.group)
+  students!: Student[];
 }

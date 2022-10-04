@@ -26,12 +26,7 @@ export class UserDto {
 
   scheduleId?: string;
 
-  year?: number;
-
-  constructor(
-    user: User,
-    options: { role: Role; scheduleId?: string; year?: number },
-  ) {
+  constructor(user: User, options: { role: Role; scheduleId?: string }) {
     this.id = user.id;
     this.details = user.details;
     this.login = user.login;
@@ -44,6 +39,5 @@ export class UserDto {
     this.isRegistered = user.isRegistered;
     this.role = options.role;
     this.scheduleId = options.scheduleId;
-    this.year = options.year;
   }
 }
