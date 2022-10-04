@@ -10,10 +10,13 @@ export class GroupsRepository extends Repository<Group> {
     super(Group, entityManager);
   }
 
-  findAllAndCount(pageable?: Pageable): Promise<[Group[], number]> {
+  findAllAndCount(
+    options?: { facultyId?: number } & Pageable,
+  ): Promise<[Group[], number]> {
     return this.findAndCount({
+      where: { faculty: { id: options?.facultyId } },
       order: { name: 'ASC' },
-      ...getPageableFindOptions(pageable),
+      ...getPageableFindOptions({ page: options?.page, size: options?.size }),
     });
   }
 }

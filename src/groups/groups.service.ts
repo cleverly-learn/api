@@ -83,7 +83,9 @@ export class GroupsService {
     return existingGroups.concat(savedGroups);
   }
 
-  findAllAndCount(options?: Pageable): Promise<[Group[], number]> {
+  findAllAndCount(
+    options?: { facultyId?: number } & Pageable,
+  ): Promise<[Group[], number]> {
     return this.groupsRepository.findAllAndCount(options);
   }
 }
