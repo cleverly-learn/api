@@ -1,6 +1,7 @@
 import { AuthService } from 'auth/auth.service';
 import { LecturersService } from 'lecturers/lecturers.service';
 import { Role } from '_common/enums/role.enum';
+import { StudentsService } from 'students/students.service';
 import { Test } from '@nestjs/testing';
 import { User } from 'users/entities/user.entity';
 import { UsersController } from 'users/users.controller';
@@ -17,6 +18,8 @@ describe('UsersController', () => {
       providers: [
         mockProvider(UsersService),
         mockProvider(LecturersService),
+        mockProvider(StudentsService),
+        mockProvider(AuthService),
         UsersController,
       ],
     }).compile();
@@ -33,7 +36,9 @@ describe('UsersController', () => {
         firstName: 'hello',
         password: 'test',
       };
-      const patchSpy = jest.spyOn(usersService, 'patch').mockResolvedValue({});
+      const patchSpy = jest
+        .spyOn(usersService, 'patch')
+        .mockResolvedValue({ id: 1 });
 
       await usersController.patchCurrentUser(1, dto);
 

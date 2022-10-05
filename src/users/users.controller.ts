@@ -58,12 +58,15 @@ export class UsersController {
         scheduleId: lecturer.scheduleId,
       });
     }
+    if (role === Role.STUDENT) {
+      const student = await this.studentsService.findOneByUserId(userId);
+      return new UserDto(student.user, {
+        role,
+        scheduleId: student.group.scheduleId,
+      });
+    }
 
-    const student = await this.studentsService.findOneByUserId(userId);
-    return new UserDto(student.user, {
-      role,
-      scheduleId: student.group.scheduleId,
-    });
+    throw new BadRequestException('Invalid user provided');
   }
 
   @Patch('me')
