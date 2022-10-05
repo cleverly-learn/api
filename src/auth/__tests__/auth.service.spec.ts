@@ -2,8 +2,10 @@ import * as randomStringUtil from '_common/utils/random-string';
 import { AuthService } from 'auth/auth.service';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { LecturersService } from 'lecturers/lecturers.service';
 import { RefreshToken } from 'auth/entities/refresh-token.entity';
 import { Repository } from 'typeorm';
+import { Role } from '_common/enums/role.enum';
 import { Test } from '@nestjs/testing';
 import { TokenPairDto } from 'auth/dto/token-pair.dto';
 import { User } from 'users/entities/user.entity';
@@ -19,11 +21,13 @@ describe('AuthService', () => {
   let jwtService: JwtService;
   let refreshTokensRepository: Repository<RefreshToken>;
   let configService: ConfigService;
+  let lecturersService: LecturersService;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       providers: [
         mockProvider(UsersService),
+        mockProvider(LecturersService),
         mockRepository(RefreshToken),
         AuthService,
         JwtService,
@@ -36,6 +40,7 @@ describe('AuthService', () => {
     jwtService = module.get(JwtService);
     refreshTokensRepository = module.get(getRepositoryToken(RefreshToken));
     configService = module.get(ConfigService);
+    lecturersService = module.get(LecturersService);
   });
 
   beforeEach(() => {
@@ -294,6 +299,35 @@ describe('AuthService', () => {
       const logins = range(100000).map(() => AuthService.generateLogin());
 
       expect(logins.length).toBe(uniq(logins).length);
+    });
+  });
+
+  describe('getRoleByUserId', () => {
+    it('When: User is admin. Expected: Admin', async () => {
+      usersService.checkIsAdmin = jest.fn().mockResolvedValue(true);
+      lecturersService.existsById = jest.fn().mockResolvedValue(false);
+
+      const actual = await authService.getRoleByUserId(1);
+
+      expect(actual).toBe(Role.ADMIN);
+    });
+
+    it('When: Lecturer exists. Expected: Admin', async () => {
+      usersService.checkIsAdmin = jest.fn().mockResolvedValue(false);
+      lecturersService.existsById = jest.fn().mockResolvedValue(true);
+
+      const actual = await authService.getRoleByUserId(1);
+
+      expect(actual).toBe(Role.LECTURER);
+    });
+
+    it('When: User is not admin and lecturer does not exist. Expected: Student', async () => {
+      usersService.checkIsAdmin = jest.fn().mockResolvedValue(false);
+      lecturersService.existsById = jest.fn().mockResolvedValue(false);
+
+      const actual = await authService.getRoleByUserId(1);
+
+      expect(actual).toBe(Role.STUDENT);
     });
   });
 });

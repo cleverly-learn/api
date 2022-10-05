@@ -17,4 +17,12 @@ export class UsersRepository extends Repository<User> {
       ...getPageableFindOptions(pageable),
     });
   }
+
+  async checkIsAdmin(id: number): Promise<boolean> {
+    const user = await this.findOne({
+      where: { id },
+      select: { isAdmin: true },
+    });
+    return Boolean(user);
+  }
 }

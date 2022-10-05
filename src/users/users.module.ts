@@ -1,3 +1,4 @@
+import { AuthModule } from 'auth/auth.module';
 import { LecturersModule } from 'lecturers/lecturers.module';
 import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -10,6 +11,7 @@ import { UsersService } from 'users/users.service';
   imports: [
     TypeOrmModule.forFeature([User]),
     forwardRef(() => LecturersModule),
+    forwardRef(() => AuthModule),
   ],
   providers: [UsersService, UsersRepository],
   exports: [UsersService],

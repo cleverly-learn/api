@@ -35,12 +35,17 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly lecturersService: LecturersService,
+    private readonly authService: AuthService,
   ) {}
 
   @Get('me')
   async getCurrentUser(@UserId() userId: number): Promise<UserDto> {
-    const user = await this.usersService.findOneById(userId);
-    return new UserDto(user, { role: Role.ADMIN });
+    const [user, role] = await Promise.all([
+      this.usersService.findOneById(userId),
+      this.authService.getRoleByUserId(userId),
+    ]);
+
+    return new UserDto(user, { role });
   }
 
   @Patch('me')

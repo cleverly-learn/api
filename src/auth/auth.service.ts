@@ -5,8 +5,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { JwtTokenPayload } from 'auth/helpers/jwt-token-payload';
+import { LecturersService } from 'lecturers/lecturers.service';
 import { LessThan, Repository } from 'typeorm';
 import { RefreshToken } from 'auth/entities/refresh-token.entity';
+import { Role } from '_common/enums/role.enum';
 import { Symbols, randomString } from '_common/utils/random-string';
 import { TokenPairDto } from 'auth/dto/token-pair.dto';
 import { User } from 'users/entities/user.entity';
@@ -20,6 +22,7 @@ export class AuthService {
   constructor(
     private readonly configService: ConfigService,
     private readonly usersService: UsersService,
+    private readonly lecturersService: LecturersService,
     private readonly jwtService: JwtService,
     @InjectRepository(RefreshToken)
     private readonly refreshTokensRepository: Repository<RefreshToken>,
@@ -160,5 +163,19 @@ export class AuthService {
 
   async removeRefreshToken(token: string): Promise<void> {
     await this.refreshTokensRepository.delete({ token });
+  }
+
+  async getRoleByUserId(userId: number): Promise<Role> {
+    const [isAdmin, isLecturer] = await Promise.all([
+      this.usersService.checkIsAdmin(userId),
+      this.lecturersService.existsById(userId),
+    ]);
+    if (isAdmin) {
+      return Role.ADMIN;
+    }
+    if (isLecturer) {
+      return Role.LECTURER;
+    }
+    return Role.STUDENT;
   }
 }

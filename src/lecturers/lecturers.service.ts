@@ -75,4 +75,9 @@ export class LecturersService {
   findAllAndCount(pageable?: Pageable): Promise<[Lecturer[], number]> {
     return this.lecturersRepository.findAllAndCount(pageable);
   }
+
+  async existsById(id: number): Promise<boolean> {
+    const count = await this.lecturersRepository.countBy({ id });
+    return count > 0;
+  }
 }

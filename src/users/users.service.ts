@@ -87,4 +87,8 @@ export class UsersService {
 
     return stream;
   }
+
+  async checkIsAdmin(id: number): Promise<boolean> {
+    return this.usersRepository.checkIsAdmin(id);
+  }
 }
