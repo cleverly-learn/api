@@ -20,7 +20,9 @@ import { LecturersService } from 'lecturers/lecturers.service';
 import { Page } from '_common/dto/page.dto';
 import { PatchUserRequestDto } from 'users/dto/patch-user.request.dto';
 import { PatchUserResponseDto } from 'users/dto/patch-user.response.dto';
-import { Role, isStudent } from '_common/enums/role.enum';
+import { Role } from '_common/enums/role.enum';
+import { Student } from 'students/entities/student.entity';
+import { StudentsService } from 'students/students.service';
 import { UserDto } from 'users/dto/user.dto';
 import { UserId } from 'auth/decorators/user.decorators';
 import { UsersService } from 'users/users.service';
@@ -35,6 +37,7 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly lecturersService: LecturersService,
+    private readonly studentsService: StudentsService,
     private readonly authService: AuthService,
   ) {}
 
@@ -60,7 +63,7 @@ export class UsersController {
   async getAll(
     @Query() { role, page, size }: GetAllRequestDto,
   ): Promise<Page<UserDto>> {
-    if (isUndefined(role) || isStudent(role)) {
+    if (isUndefined(role)) {
       return new Page({ data: [], totalElements: 0 });
     }
 
@@ -69,6 +72,7 @@ export class UsersController {
     const [users, count] = await {
       [Role.ADMIN]: this.usersService.findAllAndCountAdmins(pageable),
       [Role.LECTURER]: this.lecturersService.findAllAndCount(pageable),
+      [Role.STUDENT]: this.studentsService.findAllAndCount(pageable),
     }[role];
 
     const dtos = users.map((userable) => {
@@ -76,6 +80,12 @@ export class UsersController {
         return new UserDto(userable.user, {
           role,
           scheduleId: userable.scheduleId,
+        });
+      }
+      if (userable instanceof Student) {
+        return new UserDto(userable.user, {
+          role,
+          scheduleId: userable.group.scheduleId,
         });
       }
       return new UserDto(userable, { role });

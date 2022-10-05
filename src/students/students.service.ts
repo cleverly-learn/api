@@ -1,10 +1,10 @@
 import { AuthService } from 'auth/auth.service';
 import { GroupsService } from 'groups/groups.service';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
-import { Repository } from 'typeorm';
+import { Pageable } from '_common/types/pageable.interface';
 import { Student } from 'students/entities/student.entity';
+import { StudentsRepository } from 'students/repositories/students.repository';
 import { UsersService } from 'users/users.service';
 import { isEmail } from 'class-validator';
 
@@ -22,8 +22,7 @@ export class StudentsService {
     private readonly usersService: UsersService,
     private readonly groupsService: GroupsService,
     private readonly mailerService: MailerService,
-    @InjectRepository(Student)
-    private readonly studentsRepository: Repository<Student>,
+    private readonly studentsRepository: StudentsRepository,
   ) {}
 
   async create({
@@ -61,5 +60,9 @@ export class StudentsService {
       user: savedUser,
       group,
     });
+  }
+
+  findAllAndCount(pageable?: Pageable): Promise<[Student[], number]> {
+    return this.studentsRepository.findAllAndCount(pageable);
   }
 }

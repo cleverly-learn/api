@@ -2,20 +2,22 @@ import { AuthService } from 'auth/auth.service';
 import { Group } from 'groups/entities/group.entity';
 import { GroupsService } from 'groups/groups.service';
 import { MailerService } from '@nestjs-modules/mailer';
-import { Repository } from 'typeorm';
 import { Student } from 'students/entities/student.entity';
+import { StudentsRepository } from 'students/repositories/students.repository';
 import { StudentsService } from 'students/students.service';
 import { Test } from '@nestjs/testing';
 import { User } from 'users/entities/user.entity';
 import { UsersService } from 'users/users.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { mockProvider, mockRepository } from '_common/utils/test-helpers';
+import {
+  mockProvider,
+  mockRepositoryProvider,
+} from '_common/utils/test-helpers';
 import { omit } from 'lodash';
 
 describe('StudentsService', () => {
   let studentsService: StudentsService;
   let usersService: UsersService;
-  let studentsRepository: Repository<Student>;
+  let studentsRepository: StudentsRepository;
   let mailerService: MailerService;
   let groupsService: GroupsService;
 
@@ -26,7 +28,7 @@ describe('StudentsService', () => {
         mockProvider(UsersService),
         mockProvider(MailerService),
         mockProvider(GroupsService),
-        mockRepository(Student),
+        mockRepositoryProvider(StudentsRepository),
       ],
     }).compile();
 
@@ -34,7 +36,7 @@ describe('StudentsService', () => {
     usersService = module.get(UsersService);
     mailerService = module.get(MailerService);
     groupsService = module.get(GroupsService);
-    studentsRepository = module.get(getRepositoryToken(Student));
+    studentsRepository = module.get(StudentsRepository);
   });
 
   describe('create', () => {

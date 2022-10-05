@@ -17,7 +17,7 @@ export class Student {
   @JoinColumn()
   user!: User;
 
-  @ManyToOne(() => Group)
+  @ManyToOne(() => Group, { eager: true })
   @JoinColumn()
   group!: Group;
 }
