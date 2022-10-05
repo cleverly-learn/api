@@ -42,13 +42,28 @@ export class UsersController {
   ) {}
 
   @Get('me')
-  async getCurrentUser(@UserId() userId: number): Promise<UserDto> {
-    const [user, role] = await Promise.all([
-      this.usersService.findOneById(userId),
-      this.authService.getRoleByUserId(userId),
-    ]);
+  async getCurrentUser(
+    @UserId(ValidateUserIdPipe) userId: number,
+  ): Promise<UserDto> {
+    const role = await this.authService.getRoleByUserId(userId);
 
-    return new UserDto(user, { role });
+    if (role === Role.ADMIN) {
+      const user = await this.usersService.findOneById(userId);
+      return new UserDto(user, { role });
+    }
+    if (role === Role.LECTURER) {
+      const lecturer = await this.lecturersService.findOneByUserId(userId);
+      return new UserDto(lecturer.user, {
+        role,
+        scheduleId: lecturer.scheduleId,
+      });
+    }
+
+    const student = await this.studentsService.findOneByUserId(userId);
+    return new UserDto(student.user, {
+      role,
+      scheduleId: student.group.scheduleId,
+    });
   }
 
   @Patch('me')

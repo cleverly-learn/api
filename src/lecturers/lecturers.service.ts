@@ -80,4 +80,8 @@ export class LecturersService {
     const count = await this.lecturersRepository.countBy({ id });
     return count > 0;
   }
+
+  findOneByUserId(id: number): Promise<Lecturer> {
+    return this.lecturersRepository.findOneByOrFail({ user: { id } });
+  }
 }

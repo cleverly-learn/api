@@ -65,4 +65,8 @@ export class StudentsService {
   findAllAndCount(pageable?: Pageable): Promise<[Student[], number]> {
     return this.studentsRepository.findAllAndCount(pageable);
   }
+
+  findOneByUserId(id: number): Promise<Student> {
+    return this.studentsRepository.findOneByOrFail({ user: { id } });
+  }
 }
