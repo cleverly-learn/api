@@ -45,16 +45,17 @@ export class StudentsService {
     };
     const hashedUser = await AuthService.withHashedPassword(user);
     const savedUser = await this.usersService.create(hashedUser);
-    const group = await this.groupsService.findById(groupId);
 
     if (isEmail(email)) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.mailerService.sendMail({
-        to: 'vladhookovskiy@gmail.com',
+        to: email,
         subject: 'Логін та пароль для реєстрації',
         text: `Логін: ${user.login}\nПароль: ${user.password}`,
       });
     }
+
+    const group = await this.groupsService.findById(groupId);
 
     return this.studentsRepository.save({
       user: savedUser,
