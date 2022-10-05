@@ -5,9 +5,9 @@ import { User } from 'users/entities/user.entity';
 export class PatchUserResponseDto extends OmitType(PatchUserRequestDto, [
   'password',
 ]) {
-  id?: number;
+  id!: number;
 
-  constructor(user: Partial<User>) {
+  constructor(user: Partial<User> & Pick<User, 'id'>) {
     super();
     this.id = user.id;
     this.firstName = user.firstName;

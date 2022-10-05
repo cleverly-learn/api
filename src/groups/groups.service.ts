@@ -94,7 +94,7 @@ export class GroupsService {
     return count > 0;
   }
 
-  findById(id: number): Promise<Group> {
+  findOneById(id: number): Promise<Group> {
     return this.groupsRepository.findOneByOrFail({ id });
   }
 }

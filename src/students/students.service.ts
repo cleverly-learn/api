@@ -1,4 +1,5 @@
 import { AuthService } from 'auth/auth.service';
+import { Group } from 'groups/entities/group.entity';
 import { GroupsService } from 'groups/groups.service';
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -6,7 +7,8 @@ import { Pageable } from '_common/types/pageable.interface';
 import { Student } from 'students/entities/student.entity';
 import { StudentsRepository } from 'students/repositories/students.repository';
 import { UsersService } from 'users/users.service';
-import { isEmail } from 'class-validator';
+import { isEmail, isNotEmptyObject } from 'class-validator';
+import { isUndefined } from 'lodash';
 
 interface CreateParams {
   firstName: string;
@@ -14,6 +16,21 @@ interface CreateParams {
   patronymic: string;
   email?: string;
   groupId: number;
+}
+interface PatchParams {
+  firstName?: string;
+  lastName?: string;
+  patronymic?: string;
+  groupId?: number;
+}
+interface PatchReturnValue {
+  id: number;
+  user?: {
+    firstName?: string;
+    lastName?: string;
+    patronymic?: string;
+  };
+  group?: Group;
 }
 
 @Injectable()
@@ -54,7 +71,7 @@ export class StudentsService {
       });
     }
 
-    const group = await this.groupsService.findById(groupId);
+    const group = await this.groupsService.findOneById(groupId);
 
     return this.studentsRepository.save({
       user: savedUser,
@@ -68,5 +85,55 @@ export class StudentsService {
 
   findOneByUserId(id: number): Promise<Student> {
     return this.studentsRepository.findOneByOrFail({ user: { id } });
+  }
+
+  async existsById(id: number): Promise<boolean> {
+    const count = await this.studentsRepository.countBy({ id });
+    return count > 0;
+  }
+
+  async patch(
+    id: number,
+    { groupId, ...params }: PatchParams,
+  ): Promise<PatchReturnValue> {
+    const user = await this.patchUser(id, params);
+    const group = await this.patchStudentGroup(id, groupId);
+
+    return {
+      id,
+      user,
+      group,
+    };
+  }
+
+  private async patchUser(
+    studentId: number,
+    params: Omit<PatchParams, 'groupId'>,
+  ): Promise<Omit<PatchParams, 'groupId'> | undefined> {
+    if (!isNotEmptyObject(params)) {
+      return undefined;
+    }
+
+    const userId = await this.studentsRepository.findUserIdByStudentId(
+      studentId,
+    );
+    return this.usersService.patch(userId, params);
+  }
+
+  private async patchStudentGroup(
+    studentId: number,
+    groupId?: number,
+  ): Promise<Group | undefined> {
+    if (isUndefined(groupId)) {
+      return undefined;
+    }
+
+    const group = await this.groupsService.findOneById(groupId);
+    const student = await this.studentsRepository.save({
+      id: studentId,
+      group,
+    });
+
+    return student.group;
   }
 }

@@ -50,7 +50,7 @@ describe('StudentsService', () => {
         .spyOn(usersService, 'create')
         .mockResolvedValue({ test: 'user' } as unknown as User);
       const groupFindSpy = jest
-        .spyOn(groupsService, 'findById')
+        .spyOn(groupsService, 'findOneById')
         .mockResolvedValue({ test: 'group' } as unknown as Group);
       const mailerSpy = jest.spyOn(mailerService, 'sendMail');
       const studentCreateSpy = jest
@@ -85,6 +85,79 @@ describe('StudentsService', () => {
         group: { test: 'group' },
       });
       expect(actual).toEqual({ test: 'student' });
+    });
+  });
+
+  describe('patch', () => {
+    it('When: Only user data provided. Expected: Only user updated', async () => {
+      const findUserIdSpy = jest
+        .spyOn(studentsRepository, 'findUserIdByStudentId')
+        .mockResolvedValue(5);
+      const findGroupSpy = jest.spyOn(groupsService, 'findOneById');
+      const saveStudentSpy = jest.spyOn(studentsRepository, 'save');
+      const userData = {
+        firstName: 'name',
+        lastName: 'last',
+        patronymic: 'patro',
+      };
+      const patchUserSpy = jest.spyOn(usersService, 'patch').mockResolvedValue({
+        ...userData,
+        id: 5,
+      });
+
+      const actual = await studentsService.patch(1, {
+        firstName: 'name',
+        lastName: 'last',
+        patronymic: 'patro',
+      });
+
+      expect(findUserIdSpy).toBeCalledWith(1);
+      expect(findGroupSpy).not.toBeCalled();
+      expect(saveStudentSpy).not.toBeCalled();
+      expect(patchUserSpy).toBeCalledWith(5, userData);
+      expect(actual).toEqual({
+        id: 1,
+        user: {
+          id: 5,
+          ...userData,
+        },
+      });
+    });
+
+    it('When: Only group id provided. Expected: Only group updated', async () => {
+      const findUserIdSpy = jest.spyOn(
+        studentsRepository,
+        'findUserIdByStudentId',
+      );
+      const group = {
+        id: 2,
+        scheduleId: 'test',
+      } as unknown as Group;
+      const findGroupSpy = jest
+        .spyOn(groupsService, 'findOneById')
+        .mockResolvedValue(group);
+      const saveStudentSpy = jest
+        .spyOn(studentsRepository, 'save')
+        .mockResolvedValue({
+          group,
+        } as unknown as Student);
+      const patchUserSpy = jest.spyOn(usersService, 'patch');
+
+      const actual = await studentsService.patch(1, {
+        groupId: 2,
+      });
+
+      expect(findUserIdSpy).not.toBeCalled();
+      expect(findGroupSpy).toBeCalledWith(2);
+      expect(saveStudentSpy).toBeCalledWith({
+        id: 1,
+        group,
+      });
+      expect(patchUserSpy).not.toBeCalled();
+      expect(actual).toEqual({
+        id: 1,
+        group,
+      });
     });
   });
 });

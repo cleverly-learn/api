@@ -16,4 +16,12 @@ export class StudentsRepository extends Repository<Student> {
       ...getPageableFindOptions(pageable),
     });
   }
+
+  async findUserIdByStudentId(studentId: number): Promise<number> {
+    const { user } = await this.findOneOrFail({
+      where: { id: studentId },
+      select: { user: { id: true } },
+    });
+    return user.id;
+  }
 }

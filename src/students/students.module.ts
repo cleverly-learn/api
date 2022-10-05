@@ -6,6 +6,7 @@ import { StudentsRepository } from 'students/repositories/students.repository';
 import { StudentsService } from 'students/students.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from 'users/users.module';
+import { ValidateStudentIdPipe } from 'students/pipes/validate-student-id.pipe';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { UsersModule } from 'users/users.module';
     GroupsModule,
   ],
   controllers: [StudentsController],
-  providers: [StudentsService, StudentsRepository],
+  providers: [StudentsService, StudentsRepository, ValidateStudentIdPipe],
   exports: [StudentsService],
 })
 export class StudentsModule {}

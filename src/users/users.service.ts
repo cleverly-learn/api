@@ -9,7 +9,7 @@ import ExcelJs from 'exceljs';
 type PatchParams = Partial<
   Pick<User, 'firstName' | 'lastName' | 'patronymic' | 'login' | 'password'>
 >;
-type PatchReturnValue = Partial<Pick<User, 'id'>> & PatchParams;
+type PatchReturnValue = Pick<User, 'id'> & PatchParams;
 
 type CreateParams = Partial<Omit<User, 'id'>> & Pick<User, 'login'>;
 
