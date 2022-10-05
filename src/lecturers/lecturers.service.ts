@@ -8,7 +8,6 @@ import { User } from 'users/entities/user.entity';
 import { UsersService } from 'users/users.service';
 import { differenceWith, isEmpty } from 'lodash';
 import { mapScheduleDtoToNewLecturer } from 'lecturers/mappers/lecturers.mapper';
-import { randomString } from '_common/utils/random-string';
 
 @Injectable()
 export class LecturersService {
@@ -55,7 +54,7 @@ export class LecturersService {
     const lecturers = await this.lecturersRepository.findAllNotRegistered();
     const usersWithPasswords = lecturers.map(({ user }) => ({
       ...user,
-      password: randomString(10),
+      password: AuthService.generatePassword(),
     }));
 
     if (usersWithPasswords.length) {

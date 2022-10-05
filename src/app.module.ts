@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { FacultiesModule } from 'faculties/faculties.module';
 import { GroupsModule } from 'groups/groups.module';
 import { LecturersModule } from 'lecturers/lecturers.module';
+import { MailerModule } from '@nestjs-modules/mailer';
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from 'schedule/schedule.module';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
@@ -29,6 +30,18 @@ import { UsersModule } from 'users/users.module';
         autoLoadEntities: true,
         logging: true,
         synchronize: true,
+      }),
+    }),
+    MailerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        transport: configService.get<string>('SMTP_TRANSPORT'),
+        defaults: {
+          auth: {
+            user: configService.get<string>('SMTP_USER'),
+            pass: configService.get<string>('SMTP_PASSWORD'),
+          },
+        },
       }),
     }),
     UsersModule,

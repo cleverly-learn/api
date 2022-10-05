@@ -17,6 +17,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@nestjs-modules/mailer": "^1.8.1",
     "@nestjs/axios": "^0.1.0",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.2.0",
@@ -34,6 +35,7 @@
     "exceljs": "^4.3.0",
     "lodash": "^4.17.21",
     "module": "^1.2.5",
+    "nodemailer": "^6.8.0",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
@@ -53,6 +55,7 @@
     "@types/jest": "28.1.4",
     "@types/lodash": "^4.14.184",
     "@types/node": "^16.0.0",
+    "@types/nodemailer": "^6.4.6",
     "@types/passport-jwt": "^3.0.6",
     "@types/passport-local": "^1.0.34",
     "@types/validator": "^13.7.5",

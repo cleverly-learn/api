@@ -82,6 +82,10 @@ export class AuthService {
     return randomString(10, Symbols.LATIN_LETTERS);
   }
 
+  static generatePassword(): string {
+    return randomString(10);
+  }
+
   async register(user: Omit<User, 'id'>): Promise<User> {
     const protectedUser = await AuthService.withHashedPassword(user);
     return this.usersService.create(protectedUser);
