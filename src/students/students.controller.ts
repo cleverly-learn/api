@@ -2,6 +2,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -17,7 +18,7 @@ import { PatchBodyDto } from 'students/dto/patch.body.dto';
 import { PatchResponseDto } from 'students/dto/patch.response.dto';
 import { StudentDto } from 'students/dto/student.dto';
 import { StudentsService } from 'students/students.service';
-import { ValidateUserIdPipe } from '_common/pipes/validate-user-id.pipe';
+import { ValidateStudentIdPipe } from 'students/pipes/validate-student-id.pipe';
 
 @Controller('students')
 @UseGuards(JwtAuthGuard)
@@ -42,10 +43,15 @@ export class StudentsController {
 
   @Patch(':id')
   async patch(
-    @Param('id', ValidateUserIdPipe) id: number,
+    @Param('id', ValidateStudentIdPipe) id: number,
     @Body() body: PatchBodyDto,
   ): Promise<PatchResponseDto> {
     const student = await this.studentsService.patch(id, body);
     return new PatchResponseDto(student);
+  }
+
+  @Delete(':id')
+  delete(@Param('id', ValidateStudentIdPipe) id: number): Promise<void> {
+    return this.studentsService.delete(id);
   }
 }

@@ -136,4 +136,9 @@ export class StudentsService {
 
     return student.group;
   }
+
+  async delete(id: number): Promise<void> {
+    const userId = await this.studentsRepository.findUserIdByStudentId(id);
+    await this.usersService.delete(userId);
+  }
 }

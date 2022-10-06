@@ -1,14 +1,17 @@
 import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
 import {
   Controller,
+  Delete,
   Get,
   Header,
+  Param,
   Post,
   StreamableFile,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '_common/guards/jwt-auth.guard';
 import { LecturersService } from 'lecturers/lecturers.service';
+import { ValidateLecturerIdPipe } from 'lecturers/pipes/validate-lecturer-id.pipe';
 
 @Controller('lecturers')
 @UseGuards(JwtAuthGuard)
@@ -29,5 +32,10 @@ export class LecturersController {
     const stream = await this.lecturersService.exportNonRegisteredToExcel();
 
     return new StreamableFile(stream);
+  }
+
+  @Delete(':id')
+  delete(@Param('id', ValidateLecturerIdPipe) id: number): Promise<void> {
+    return this.lecturersService.delete(id);
   }
 }

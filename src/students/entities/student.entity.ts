@@ -13,7 +13,7 @@ export class Student {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @OneToOne(() => User, { eager: true })
+  @OneToOne(() => User, { eager: true, onDelete: 'CASCADE' })
   @JoinColumn()
   user!: User;
 

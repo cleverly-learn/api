@@ -6,6 +6,7 @@ import { Module, forwardRef } from '@nestjs/common';
 import { ScheduleModule } from 'schedule/schedule.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from 'users/users.module';
+import { ValidateLecturerIdPipe } from 'lecturers/pipes/validate-lecturer-id.pipe';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { UsersModule } from 'users/users.module';
     ScheduleModule,
   ],
   controllers: [LecturersController],
-  providers: [LecturersService, LecturersRepository],
+  providers: [LecturersService, LecturersRepository, ValidateLecturerIdPipe],
   exports: [LecturersService],
 })
 export class LecturersModule {}

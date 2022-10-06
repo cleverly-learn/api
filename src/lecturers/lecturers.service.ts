@@ -84,4 +84,9 @@ export class LecturersService {
   findOneByUserId(id: number): Promise<Lecturer> {
     return this.lecturersRepository.findOneByOrFail({ user: { id } });
   }
+
+  async delete(id: number): Promise<void> {
+    const userId = await this.lecturersRepository.findUserIdByLecturerId(id);
+    await this.usersService.delete(userId);
+  }
 }

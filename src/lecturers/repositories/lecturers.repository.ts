@@ -22,4 +22,12 @@ export class LecturersRepository extends Repository<Lecturer> {
       ...getPageableFindOptions(pageable),
     });
   }
+
+  async findUserIdByLecturerId(lecturerId: number): Promise<number> {
+    const { user } = await this.findOneOrFail({
+      where: { id: lecturerId },
+      select: { user: { id: true } },
+    });
+    return user.id;
+  }
 }

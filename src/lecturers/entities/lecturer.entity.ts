@@ -15,7 +15,7 @@ export class Lecturer {
   @Column()
   scheduleId!: string;
 
-  @OneToOne(() => User, { eager: true })
+  @OneToOne(() => User, { eager: true, onDelete: 'CASCADE' })
   @JoinColumn()
   user!: User;
 }
