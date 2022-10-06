@@ -20,7 +20,7 @@ import { LecturersService } from 'lecturers/lecturers.service';
 import { Page } from '_common/dto/page.dto';
 import { PatchUserRequestDto } from 'users/dto/patch-user.request.dto';
 import { PatchUserResponseDto } from 'users/dto/patch-user.response.dto';
-import { Role } from '_common/enums/role.enum';
+import { Role, isAdmin, isLecturer, isStudent } from '_common/enums/role.enum';
 import { Student } from 'students/entities/student.entity';
 import { StudentsService } from 'students/students.service';
 import { UserDto } from 'users/dto/user.dto';
@@ -47,18 +47,18 @@ export class UsersController {
   ): Promise<UserDto> {
     const role = await this.authService.getRoleByUserId(userId);
 
-    if (role === Role.ADMIN) {
+    if (isAdmin(role)) {
       const user = await this.usersService.findOneById(userId);
       return new UserDto(user, { role });
     }
-    if (role === Role.LECTURER) {
+    if (isLecturer(role)) {
       const lecturer = await this.lecturersService.findOneByUserId(userId);
       return new UserDto(lecturer.user, {
         role,
         scheduleId: lecturer.scheduleId,
       });
     }
-    if (role === Role.STUDENT) {
+    if (isStudent(role)) {
       const student = await this.studentsService.findOneByUserId(userId);
       return new UserDto(student.user, {
         role,
@@ -135,7 +135,7 @@ export class UsersController {
       ...protectedDto,
       login: AuthService.generateLogin(),
       email: protectedDto.email ?? '',
-      isAdmin: role === Role.ADMIN,
+      isAdmin: isAdmin(role),
     });
 
     return new UserDto(user, { role });
