@@ -1,3 +1,4 @@
+import { FacultyDto } from 'faculties/dto/faculty.dto';
 import { Group } from 'groups/entities/group.entity';
 
 export class GroupDto {
@@ -7,11 +8,11 @@ export class GroupDto {
 
   scheduleId!: string;
 
-  faculty!: string;
+  faculty!: FacultyDto;
 
   constructor(group: Group) {
     this.id = group.id;
-    this.faculty = group.faculty.name;
+    this.faculty = new FacultyDto(group.faculty);
     this.name = group.name;
     this.scheduleId = group.scheduleId;
   }
