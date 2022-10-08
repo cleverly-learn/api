@@ -1,3 +1,5 @@
+import { Group } from 'groups/entities/group.entity';
+import { GroupBaseDto } from 'groups/dto/group-base.dto';
 import { Role } from '_common/enums/role.enum';
 import { User } from 'users/entities/user.entity';
 
@@ -26,7 +28,12 @@ export class UserDto {
 
   scheduleId?: string;
 
-  constructor(user: User, options: { role: Role; scheduleId?: string }) {
+  group?: GroupBaseDto;
+
+  constructor(
+    user: User,
+    options: { role: Role; scheduleId?: string; group?: Group },
+  ) {
     this.id = user.id;
     this.details = user.details;
     this.login = user.login;
@@ -39,5 +46,6 @@ export class UserDto {
     this.isRegistered = user.isRegistered;
     this.role = options.role;
     this.scheduleId = options.scheduleId;
+    this.group = options.group ? new GroupBaseDto(options.group) : undefined;
   }
 }

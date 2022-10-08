@@ -1,4 +1,5 @@
 import { AuthService } from 'auth/auth.service';
+import { Group } from 'groups/entities/group.entity';
 import { LecturersService } from 'lecturers/lecturers.service';
 import { Role } from '_common/enums/role.enum';
 import { StudentsService } from 'students/students.service';
@@ -91,12 +92,12 @@ describe('UsersController', () => {
     });
   });
 
-  describe('getCurrentUser', () => {
+  describe('get', () => {
     it('When: Role is admin. Expected: User admin dto', async () => {
       authService.getRoleByUserId = jest.fn().mockResolvedValue(Role.ADMIN);
       usersService.findOneById = jest.fn().mockResolvedValue({ name: 'admin' });
 
-      const actual = await usersController.getCurrentUser(1);
+      const actual = await usersController.get(1);
 
       expect(actual).toEqual(
         new UserDto({ name: 'admin' } as unknown as User, { role: Role.ADMIN }),
@@ -109,7 +110,7 @@ describe('UsersController', () => {
         .fn()
         .mockResolvedValue({ user: { name: 'lecturer' }, scheduleId: 'id' });
 
-      const actual = await usersController.getCurrentUser(1);
+      const actual = await usersController.get(1);
 
       expect(actual).toEqual(
         new UserDto({ name: 'lecturer' } as unknown as User, {
@@ -123,15 +124,16 @@ describe('UsersController', () => {
       authService.getRoleByUserId = jest.fn().mockResolvedValue(Role.STUDENT);
       studentsService.findOneByUserId = jest.fn().mockResolvedValue({
         user: { name: 'student' },
-        group: { scheduleId: 'id' },
+        group: { scheduleId: 'id', faculty: {} },
       });
 
-      const actual = await usersController.getCurrentUser(1);
+      const actual = await usersController.get(1);
 
       expect(actual).toEqual(
         new UserDto({ name: 'student' } as unknown as User, {
           role: Role.STUDENT,
           scheduleId: 'id',
+          group: { scheduleId: 'id', faculty: {} } as Group,
         }),
       );
     });

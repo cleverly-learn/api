@@ -41,32 +41,36 @@ export class UsersController {
     private readonly authService: AuthService,
   ) {}
 
-  @Get('me')
-  async getCurrentUser(
-    @UserId(ValidateUserIdPipe) userId: number,
-  ): Promise<UserDto> {
-    const role = await this.authService.getRoleByUserId(userId);
+  @Get('id')
+  async get(@Param('id', ValidateUserIdPipe) id: number): Promise<UserDto> {
+    const role = await this.authService.getRoleByUserId(id);
 
     if (isAdmin(role)) {
-      const user = await this.usersService.findOneById(userId);
+      const user = await this.usersService.findOneById(id);
       return new UserDto(user, { role });
     }
     if (isLecturer(role)) {
-      const lecturer = await this.lecturersService.findOneByUserId(userId);
+      const lecturer = await this.lecturersService.findOneByUserId(id);
       return new UserDto(lecturer.user, {
         role,
         scheduleId: lecturer.scheduleId,
       });
     }
     if (isStudent(role)) {
-      const student = await this.studentsService.findOneByUserId(userId);
+      const student = await this.studentsService.findOneByUserId(id);
       return new UserDto(student.user, {
         role,
         scheduleId: student.group.scheduleId,
+        group: student.group,
       });
     }
 
     throw new BadRequestException('Invalid user provided');
+  }
+
+  @Get('me')
+  getCurrentUser(@UserId() userId: number): Promise<UserDto> {
+    return this.get(userId);
   }
 
   @Patch('me')
