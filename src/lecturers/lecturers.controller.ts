@@ -6,11 +6,15 @@ import {
   Header,
   Param,
   Post,
+  Query,
   StreamableFile,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '_common/guards/jwt-auth.guard';
+import { LecturerDto } from 'lecturers/dto/lecturer.dto';
 import { LecturersService } from 'lecturers/lecturers.service';
+import { Page } from '_common/dto/page.dto';
+import { PageableDto } from '_common/dto/pageable.dto';
 import { ValidateLecturerIdPipe } from 'lecturers/pipes/validate-lecturer-id.pipe';
 
 @Controller('lecturers')
@@ -19,6 +23,14 @@ import { ValidateLecturerIdPipe } from 'lecturers/pipes/validate-lecturer-id.pip
 @ApiBearerAuth()
 export class LecturersController {
   constructor(private readonly lecturersService: LecturersService) {}
+
+  @Get()
+  async getAll(@Query() pageable: PageableDto): Promise<Page<LecturerDto>> {
+    const [lecturers, totalElements] =
+      await this.lecturersService.findAllAndCount(pageable);
+    const data = lecturers.map((lecturer) => new LecturerDto(lecturer));
+    return new Page({ data, totalElements });
+  }
 
   @Post('sync')
   async synchronize(): Promise<void> {

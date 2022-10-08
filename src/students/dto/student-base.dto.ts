@@ -1,33 +1,14 @@
 import { Student } from 'students/entities/student.entity';
+import { UserBaseDto } from 'users/dto/user-base.dto';
 
-export class StudentBaseDto {
+export class StudentBaseDto extends UserBaseDto {
   id!: number;
 
-  email!: string;
-
-  isRegistered!: boolean;
-
-  firstName!: string;
-
-  lastName!: string;
-
-  patronymic!: string;
-
-  phone!: string;
-
-  telegram!: string;
-
-  details!: string;
+  userId!: number;
 
   constructor(student: Student) {
+    super(student.user);
     this.id = student.id;
-    this.email = student.user.email;
-    this.isRegistered = student.user.isRegistered;
-    this.firstName = student.user.firstName;
-    this.lastName = student.user.lastName;
-    this.patronymic = student.user.patronymic;
-    this.phone = student.user.phone;
-    this.telegram = student.user.telegram;
-    this.details = student.user.details;
+    this.userId = student.user.id;
   }
 }
