@@ -10,7 +10,7 @@ export class User {
   login!: string;
 
   @Exclude()
-  @Column({ default: '' })
+  @Column({ default: '', select: false })
   password!: string;
 
   @Column({ default: '' })

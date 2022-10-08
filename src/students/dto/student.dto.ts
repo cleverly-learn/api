@@ -1,4 +1,4 @@
-import { GroupDto } from 'groups/dto/group.dto';
+import { GroupBaseDto } from 'groups/dto/group-base.dto';
 import { Student } from 'students/entities/student.entity';
 
 export class StudentDto {
@@ -20,7 +20,7 @@ export class StudentDto {
 
   details!: string;
 
-  group!: GroupDto;
+  group!: GroupBaseDto;
 
   constructor(student: Student) {
     this.id = student.id;
@@ -32,6 +32,6 @@ export class StudentDto {
     this.phone = student.user.phone;
     this.telegram = student.user.telegram;
     this.details = student.user.details;
-    this.group = new GroupDto(student.group);
+    this.group = new GroupBaseDto(student.group);
   }
 }

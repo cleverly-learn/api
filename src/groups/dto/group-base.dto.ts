@@ -1,7 +1,7 @@
 import { FacultyDto } from 'faculties/dto/faculty.dto';
 import { Group } from 'groups/entities/group.entity';
 
-export class GroupDto {
+export class GroupBaseDto {
   id!: number;
 
   name!: string;

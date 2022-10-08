@@ -16,6 +16,11 @@ export class GroupsRepository extends Repository<Group> {
     return this.findAndCount({
       where: { faculty: { id: options?.facultyId } },
       order: { name: 'ASC' },
+      loadEagerRelations: false,
+      relations: {
+        faculty: true,
+        students: true,
+      },
       ...getPageableFindOptions({ page: options?.page, size: options?.size }),
     });
   }

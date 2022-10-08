@@ -1,5 +1,5 @@
 import { Group } from 'groups/entities/group.entity';
-import { GroupDto } from 'groups/dto/group.dto';
+import { GroupBaseDto } from 'groups/dto/group-base.dto';
 import { OmitType } from '@nestjs/swagger';
 import { PatchBodyDto } from 'students/dto/patch.body.dto';
 
@@ -16,7 +16,7 @@ interface PatchEntity {
 export class PatchResponseDto extends OmitType(PatchBodyDto, ['groupId']) {
   id!: number;
 
-  group?: GroupDto;
+  group?: GroupBaseDto;
 
   constructor(student: PatchEntity) {
     super();
@@ -24,6 +24,6 @@ export class PatchResponseDto extends OmitType(PatchBodyDto, ['groupId']) {
     this.firstName = student.user?.firstName;
     this.lastName = student.user?.lastName;
     this.patronymic = student.user?.patronymic;
-    this.group = student.group ? new GroupDto(student.group) : undefined;
+    this.group = student.group ? new GroupBaseDto(student.group) : undefined;
   }
 }

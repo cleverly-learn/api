@@ -11,7 +11,7 @@ export class FacultiesService {
   ) {}
 
   findAll(): Promise<Faculty[]> {
-    return this.facultiesRepository.find();
+    return this.facultiesRepository.find({ order: { name: 'ASC' } });
   }
 
   create(faculties: Omit<Faculty, 'id'>[]): Promise<Faculty[]> {
