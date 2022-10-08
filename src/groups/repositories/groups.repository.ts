@@ -24,4 +24,16 @@ export class GroupsRepository extends Repository<Group> {
       ...getPageableFindOptions({ page: options?.page, size: options?.size }),
     });
   }
+
+  findOneWithStudentsById(id: number): Promise<Group> {
+    return this.findOneOrFail({
+      where: { id },
+      order: {
+        students: {
+          user: { lastName: 'ASC', firstName: 'ASC', patronymic: 'ASC' },
+        },
+      },
+      relations: { students: true },
+    });
+  }
 }

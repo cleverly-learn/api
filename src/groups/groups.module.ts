@@ -7,11 +7,17 @@ import { IsGroupExistConstraint } from 'groups/validators/is-group-exist/is-grou
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from 'schedule/schedule.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ValidateGroupIdPipe } from 'groups/pipes/validate-group-id.pipe';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Group]), ScheduleModule, FacultiesModule],
   controllers: [GroupsController],
-  providers: [GroupsService, GroupsRepository, IsGroupExistConstraint],
+  providers: [
+    GroupsService,
+    GroupsRepository,
+    IsGroupExistConstraint,
+    ValidateGroupIdPipe,
+  ],
   exports: [GroupsService],
 })
 export class GroupsModule {}

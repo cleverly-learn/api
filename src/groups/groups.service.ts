@@ -97,4 +97,8 @@ export class GroupsService {
   findOneById(id: number): Promise<Group> {
     return this.groupsRepository.findOneByOrFail({ id });
   }
+
+  findOneWithStudentsById(id: number): Promise<Group> {
+    return this.groupsRepository.findOneWithStudentsById(id);
+  }
 }
