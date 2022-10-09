@@ -7,7 +7,17 @@ import { UsersRepository } from 'users/repositories/users.repository';
 import ExcelJs from 'exceljs';
 
 type PatchParams = Partial<
-  Pick<User, 'firstName' | 'lastName' | 'patronymic' | 'login' | 'password'>
+  Pick<
+    User,
+    | 'firstName'
+    | 'lastName'
+    | 'patronymic'
+    | 'login'
+    | 'password'
+    | 'telegram'
+    | 'phone'
+    | 'details'
+  >
 >;
 type PatchReturnValue = Pick<User, 'id'> & PatchParams;
 

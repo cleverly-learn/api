@@ -13,5 +13,8 @@ export class PatchUserResponseDto extends OmitType(PatchUserRequestDto, [
     this.firstName = user.firstName;
     this.lastName = user.lastName;
     this.patronymic = user.patronymic;
+    this.telegram = user.telegram;
+    this.phone = user.phone;
+    this.details = user.details;
   }
 }
