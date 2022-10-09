@@ -17,6 +17,7 @@ type PatchParams = Partial<
     | 'telegram'
     | 'phone'
     | 'details'
+    | 'isRegistered'
   >
 >;
 type PatchReturnValue = Pick<User, 'id'> & PatchParams;

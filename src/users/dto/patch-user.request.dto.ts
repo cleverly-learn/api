@@ -1,5 +1,10 @@
 import { CreateUserRequestDto } from 'users/dto/create-user.request.dto';
-import { IsMobilePhone, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsMobilePhone,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { PartialType, PickType } from '@nestjs/swagger';
 
 export class PatchUserRequestDto extends PartialType(
@@ -21,4 +26,8 @@ export class PatchUserRequestDto extends PartialType(
   @IsOptional()
   @IsString()
   details?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isRegistered?: boolean;
 }

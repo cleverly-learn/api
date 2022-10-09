@@ -16,5 +16,6 @@ export class PatchUserResponseDto extends OmitType(PatchUserRequestDto, [
     this.telegram = user.telegram;
     this.phone = user.phone;
     this.details = user.details;
+    this.isRegistered = user.isRegistered;
   }
 }
