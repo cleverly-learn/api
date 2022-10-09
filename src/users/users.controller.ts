@@ -41,7 +41,12 @@ export class UsersController {
     private readonly authService: AuthService,
   ) {}
 
-  @Get('id')
+  @Get('me')
+  getCurrentUser(@UserId() userId: number): Promise<UserDto> {
+    return this.get(userId);
+  }
+
+  @Get(':id')
   async get(@Param('id', ValidateUserIdPipe) id: number): Promise<UserDto> {
     const role = await this.authService.getRoleByUserId(id);
 
@@ -66,11 +71,6 @@ export class UsersController {
     }
 
     throw new BadRequestException('Invalid user provided');
-  }
-
-  @Get('me')
-  getCurrentUser(@UserId() userId: number): Promise<UserDto> {
-    return this.get(userId);
   }
 
   @Patch('me')

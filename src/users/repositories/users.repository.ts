@@ -19,10 +19,10 @@ export class UsersRepository extends Repository<User> {
   }
 
   async checkIsAdmin(id: number): Promise<boolean> {
-    const user = await this.findOne({
+    const user = await this.findOneOrFail({
       where: { id },
       select: { isAdmin: true },
     });
-    return Boolean(user);
+    return user.isAdmin;
   }
 }
