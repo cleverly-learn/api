@@ -6,6 +6,8 @@ import { GroupPreviewDto } from 'groups/dto/group-preview.dto';
 import { GroupsService } from 'groups/groups.service';
 import { JwtAuthGuard } from '_common/guards/jwt-auth.guard';
 import { Page } from '_common/dto/page.dto';
+import { Role } from '_common/enums/role.enum';
+import { Roles } from '_common/decorators/roles.decorator';
 import { ValidateGroupIdPipe } from 'groups/pipes/validate-group-id.pipe';
 
 @Controller('groups')
@@ -15,6 +17,7 @@ import { ValidateGroupIdPipe } from 'groups/pipes/validate-group-id.pipe';
 export class GroupsController {
   constructor(private readonly groupsService: GroupsService) {}
 
+  @Roles(Role.ADMIN)
   @Post('/sync')
   async synchronize(): Promise<void> {
     await this.groupsService.synchronize();

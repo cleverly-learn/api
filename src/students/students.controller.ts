@@ -16,6 +16,8 @@ import { Page } from '_common/dto/page.dto';
 import { PageableDto } from '_common/dto/pageable.dto';
 import { PatchBodyDto } from 'students/dto/patch.body.dto';
 import { PatchResponseDto } from 'students/dto/patch.response.dto';
+import { Role } from '_common/enums/role.enum';
+import { Roles } from '_common/decorators/roles.decorator';
 import { StudentDto } from 'students/dto/student.dto';
 import { StudentsService } from 'students/students.service';
 import { ValidateStudentIdPipe } from 'students/pipes/validate-student-id.pipe';
@@ -24,6 +26,7 @@ import { ValidateStudentIdPipe } from 'students/pipes/validate-student-id.pipe';
 @UseGuards(JwtAuthGuard)
 @ApiTags('Students')
 @ApiBearerAuth()
+@Roles(Role.ADMIN)
 export class StudentsController {
   constructor(private readonly studentsService: StudentsService) {}
 

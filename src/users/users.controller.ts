@@ -23,6 +23,7 @@ import { Page } from '_common/dto/page.dto';
 import { PatchUserRequestDto } from 'users/dto/patch-user.request.dto';
 import { PatchUserResponseDto } from 'users/dto/patch-user.response.dto';
 import { Role, isAdmin, isLecturer, isStudent } from '_common/enums/role.enum';
+import { Roles } from '_common/decorators/roles.decorator';
 import { Student } from 'students/entities/student.entity';
 import { StudentsService } from 'students/students.service';
 import { UserDto } from 'users/dto/user.dto';
@@ -76,14 +77,7 @@ export class UsersController {
     throw new BadRequestException('Invalid user provided');
   }
 
-  @Patch('me')
-  async patchCurrentUser(
-    @UserId() userId: number,
-    @Body() patchUserDto: PatchUserRequestDto,
-  ): Promise<PatchUserResponseDto> {
-    return this.patch(userId, patchUserDto);
-  }
-
+  @Roles(Role.ADMIN)
   @Get()
   async getAll(
     @Query() { role, page, size }: GetAllRequestDto,
@@ -122,6 +116,15 @@ export class UsersController {
     });
   }
 
+  @Patch('me')
+  async patchCurrentUser(
+    @UserId() userId: number,
+    @Body() patchUserDto: PatchUserRequestDto,
+  ): Promise<PatchUserResponseDto> {
+    return this.patch(userId, patchUserDto);
+  }
+
+  @Roles(Role.ADMIN)
   @Patch(':id')
   async patch(
     @Param('id', ValidateUserIdPipe) id: number,
@@ -133,6 +136,7 @@ export class UsersController {
     return new PatchUserResponseDto(user);
   }
 
+  @Roles(Role.ADMIN)
   @Post()
   async create(
     @Body() { role, ...dto }: CreateUserRequestDto,
@@ -148,6 +152,7 @@ export class UsersController {
     return new UserDto(user, { role });
   }
 
+  @Roles(Role.ADMIN)
   @Delete(':id')
   async delete(
     @UserId() userId: number,

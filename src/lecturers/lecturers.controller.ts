@@ -15,12 +15,15 @@ import { LecturerDto } from 'lecturers/dto/lecturer.dto';
 import { LecturersService } from 'lecturers/lecturers.service';
 import { Page } from '_common/dto/page.dto';
 import { PageableDto } from '_common/dto/pageable.dto';
+import { Role } from '_common/enums/role.enum';
+import { Roles } from '_common/decorators/roles.decorator';
 import { ValidateLecturerIdPipe } from 'lecturers/pipes/validate-lecturer-id.pipe';
 
 @Controller('lecturers')
 @UseGuards(JwtAuthGuard)
 @ApiTags('Lecturers')
 @ApiBearerAuth()
+@Roles(Role.ADMIN)
 export class LecturersController {
   constructor(private readonly lecturersService: LecturersService) {}
 
