@@ -305,7 +305,7 @@ describe('AuthService', () => {
   describe('getRoleByUserId', () => {
     it('When: User is admin. Expected: Admin', async () => {
       usersService.checkIsAdmin = jest.fn().mockResolvedValue(true);
-      lecturersService.existsById = jest.fn().mockResolvedValue(false);
+      lecturersService.existsByUserId = jest.fn().mockResolvedValue(false);
 
       const actual = await authService.getRoleByUserId(1);
 
@@ -314,7 +314,7 @@ describe('AuthService', () => {
 
     it('When: Lecturer exists. Expected: Admin', async () => {
       usersService.checkIsAdmin = jest.fn().mockResolvedValue(false);
-      lecturersService.existsById = jest.fn().mockResolvedValue(true);
+      lecturersService.existsByUserId = jest.fn().mockResolvedValue(true);
 
       const actual = await authService.getRoleByUserId(1);
 
@@ -323,7 +323,7 @@ describe('AuthService', () => {
 
     it('When: User is not admin and lecturer does not exist. Expected: Student', async () => {
       usersService.checkIsAdmin = jest.fn().mockResolvedValue(false);
-      lecturersService.existsById = jest.fn().mockResolvedValue(false);
+      lecturersService.existsByUserId = jest.fn().mockResolvedValue(false);
 
       const actual = await authService.getRoleByUserId(1);
 
