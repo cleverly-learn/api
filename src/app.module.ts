@@ -1,6 +1,7 @@
 import { AuthModule } from 'auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { FacultiesModule } from 'faculties/faculties.module';
+import { GoogleModule } from 'google/google.module';
 import { GroupsModule } from 'groups/groups.module';
 import { LecturersModule } from 'lecturers/lecturers.module';
 import { MailerModule } from '@nestjs-modules/mailer';
@@ -51,6 +52,7 @@ import { UsersModule } from 'users/users.module';
     LecturersModule,
     FacultiesModule,
     StudentsModule,
+    GoogleModule,
   ],
 })
 export class AppModule {}

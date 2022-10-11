@@ -6,20 +6,7 @@ import { User } from 'users/entities/user.entity';
 import { UsersRepository } from 'users/repositories/users.repository';
 import ExcelJs from 'exceljs';
 
-type PatchParams = Partial<
-  Pick<
-    User,
-    | 'firstName'
-    | 'lastName'
-    | 'patronymic'
-    | 'login'
-    | 'password'
-    | 'telegram'
-    | 'phone'
-    | 'details'
-    | 'isRegistered'
-  >
->;
+type PatchParams = Partial<Omit<User, 'id' | 'password'>>;
 type PatchReturnValue = Pick<User, 'id'> & PatchParams;
 
 type CreateParams = Partial<Omit<User, 'id'>> & Pick<User, 'login'>;

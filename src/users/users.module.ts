@@ -1,4 +1,5 @@
 import { AuthModule } from 'auth/auth.module';
+import { GoogleModule } from 'google/google.module';
 import { LecturersModule } from 'lecturers/lecturers.module';
 import { Module, forwardRef } from '@nestjs/common';
 import { StudentsModule } from 'students/students.module';
@@ -14,6 +15,7 @@ import { UsersService } from 'users/users.service';
     forwardRef(() => LecturersModule),
     forwardRef(() => StudentsModule),
     forwardRef(() => AuthModule),
+    GoogleModule,
   ],
   providers: [UsersService, UsersRepository],
   exports: [UsersService],

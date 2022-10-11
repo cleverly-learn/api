@@ -81,6 +81,13 @@ export class LecturersService {
     return count > 0;
   }
 
+  async existsByUserId(userId: number): Promise<boolean> {
+    const count = await this.lecturersRepository.countBy({
+      user: { id: userId },
+    });
+    return count > 0;
+  }
+
   findOneByUserId(id: number): Promise<Lecturer> {
     return this.lecturersRepository.findOneByOrFail({ user: { id } });
   }

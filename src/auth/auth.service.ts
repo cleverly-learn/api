@@ -168,7 +168,7 @@ export class AuthService {
   async getRoleByUserId(userId: number): Promise<Role> {
     const [isAdmin, isLecturer] = await Promise.all([
       this.usersService.checkIsAdmin(userId),
-      this.lecturersService.existsById(userId),
+      this.lecturersService.existsByUserId(userId),
     ]);
     if (isAdmin) {
       return Role.ADMIN;

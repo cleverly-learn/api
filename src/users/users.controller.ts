@@ -1,3 +1,4 @@
+import { AddGmailBodyDto } from 'users/dto/add-gmail.body.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthService } from 'auth/auth.service';
 import {
@@ -14,6 +15,7 @@ import {
 } from '@nestjs/common';
 import { CreateUserRequestDto } from 'users/dto/create-user.request.dto';
 import { GetAllRequestDto } from 'users/dto/get-all.request.dto';
+import { GoogleService } from 'google/google.service';
 import { JwtAuthGuard } from '_common/guards/jwt-auth.guard';
 import { Lecturer } from 'lecturers/entities/lecturer.entity';
 import { LecturersService } from 'lecturers/lecturers.service';
@@ -39,6 +41,7 @@ export class UsersController {
     private readonly lecturersService: LecturersService,
     private readonly studentsService: StudentsService,
     private readonly authService: AuthService,
+    private readonly googleService: GoogleService,
   ) {}
 
   @Get('me')
@@ -155,5 +158,20 @@ export class UsersController {
     }
 
     return this.usersService.delete(id);
+  }
+
+  @Post('me/google')
+  async connectGoogle(
+    @UserId() userId: number,
+    @Body() { code }: AddGmailBodyDto,
+  ): Promise<string> {
+    const { accessToken, refreshToken, email } =
+      await this.googleService.getTokenInfo(code);
+    await this.usersService.patch(userId, {
+      googleAccessToken: accessToken,
+      googleRefreshToken: refreshToken,
+      email,
+    });
+    return email;
   }
 }

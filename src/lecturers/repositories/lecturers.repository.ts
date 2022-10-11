@@ -12,6 +12,7 @@ export class LecturersRepository extends Repository<Lecturer> {
 
   findAllNotRegistered(): Promise<Lecturer[]> {
     return this.find({
+      order: { user: { lastName: 'ASC', firstName: 'ASC', patronymic: 'ASC' } },
       where: { user: { isRegistered: false } },
     });
   }

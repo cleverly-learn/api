@@ -1,4 +1,5 @@
 import { AuthService } from 'auth/auth.service';
+import { GoogleService } from 'google/google.service';
 import { Group } from 'groups/entities/group.entity';
 import { LecturersService } from 'lecturers/lecturers.service';
 import { Role } from '_common/enums/role.enum';
@@ -25,6 +26,7 @@ describe('UsersController', () => {
         mockProvider(LecturersService),
         mockProvider(StudentsService),
         mockProvider(AuthService),
+        mockProvider(GoogleService),
         UsersController,
       ],
     }).compile();
