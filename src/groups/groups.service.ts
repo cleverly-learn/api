@@ -3,6 +3,7 @@ import { Faculty } from 'faculties/entities/faculty.entity';
 import { Group } from 'groups/entities/group.entity';
 import { GroupDto } from 'schedule/dto/group.dto';
 import { GroupsRepository } from 'groups/repositories/groups.repository';
+import { In } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { Pageable } from '_common/types/pageable.interface';
 import { ScheduleService } from 'schedule/schedule.service';
@@ -89,9 +90,9 @@ export class GroupsService {
     return this.groupsRepository.findAllAndCount(options);
   }
 
-  async existsById(id: number): Promise<boolean> {
-    const count = await this.groupsRepository.countBy({ id });
-    return count > 0;
+  async existsByIds(...ids: number[]): Promise<boolean> {
+    const count = await this.groupsRepository.countBy({ id: In(ids) });
+    return count === ids.length;
   }
 
   findOneById(id: number): Promise<Group> {
@@ -100,5 +101,9 @@ export class GroupsService {
 
   findOneWithStudentsById(id: number): Promise<Group> {
     return this.groupsRepository.findOneWithStudentsById(id);
+  }
+
+  findAllWithStudentsByIds(ids: number[]): Promise<Group[]> {
+    return this.groupsRepository.findAllWithStudentsByIds(ids);
   }
 }

@@ -18,15 +18,16 @@ import { PatchBodyDto } from 'students/dto/patch.body.dto';
 import { PatchResponseDto } from 'students/dto/patch.response.dto';
 import { Role } from '_common/enums/role.enum';
 import { Roles } from '_common/decorators/roles.decorator';
+import { RolesGuard } from '_common/guards/roles.guard';
 import { StudentDto } from 'students/dto/student.dto';
 import { StudentsService } from 'students/students.service';
 import { ValidateStudentIdPipe } from 'students/pipes/validate-student-id.pipe';
 
 @Controller('students')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.ADMIN)
 @ApiTags('Students')
 @ApiBearerAuth()
-@Roles(Role.ADMIN)
 export class StudentsController {
   constructor(private readonly studentsService: StudentsService) {}
 

@@ -24,18 +24,20 @@ import { PatchUserRequestDto } from 'users/dto/patch-user.request.dto';
 import { PatchUserResponseDto } from 'users/dto/patch-user.response.dto';
 import { Role, isAdmin, isLecturer, isStudent } from '_common/enums/role.enum';
 import { Roles } from '_common/decorators/roles.decorator';
+import { RolesGuard } from '_common/guards/roles.guard';
 import { Student } from 'students/entities/student.entity';
 import { StudentsService } from 'students/students.service';
 import { UserDto } from 'users/dto/user.dto';
-import { UserId } from 'auth/decorators/user.decorators';
+import { UserId } from 'auth/decorators/user-id.decorators';
+import { UserRole } from 'auth/decorators/user-role.decorators';
 import { UsersService } from 'users/users.service';
 import { ValidateUserIdPipe } from '_common/pipes/validate-user-id.pipe';
 import { isEqual, isUndefined } from 'lodash';
 
 @Controller('users')
+@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('Users')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
@@ -168,13 +170,12 @@ export class UsersController {
   @Post('me/google')
   async connectGoogle(
     @UserId() userId: number,
+    @UserRole() role: Role,
     @Body() { code }: AddGmailBodyDto,
   ): Promise<string> {
-    const { accessToken, refreshToken, email } =
-      await this.googleService.getTokenInfo(code);
+    const { refreshToken, email } = await this.googleService.getTokenInfo(code);
     await this.usersService.patch(userId, {
-      googleAccessToken: accessToken,
-      googleRefreshToken: refreshToken,
+      googleRefreshToken: isLecturer(role) ? refreshToken : undefined,
       email,
     });
     return email;

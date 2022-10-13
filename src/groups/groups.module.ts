@@ -1,3 +1,4 @@
+import { AreGroupExistConstraint } from 'groups/validators/are-groups-exist/are-groups-exist.constraint';
 import { FacultiesModule } from 'faculties/faculties.module';
 import { Group } from 'groups/entities/group.entity';
 import { GroupsController } from 'groups/groups.controller';
@@ -16,6 +17,7 @@ import { ValidateGroupIdPipe } from 'groups/pipes/validate-group-id.pipe';
     GroupsService,
     GroupsRepository,
     IsGroupExistConstraint,
+    AreGroupExistConstraint,
     ValidateGroupIdPipe,
   ],
   exports: [GroupsService],

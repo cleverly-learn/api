@@ -42,9 +42,5 @@ export class User {
 
   @Exclude()
   @Column({ default: '', select: false })
-  googleAccessToken!: string;
-
-  @Exclude()
-  @Column({ default: '', select: false })
   googleRefreshToken!: string;
 }

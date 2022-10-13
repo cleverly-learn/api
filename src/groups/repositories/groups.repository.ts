@@ -1,4 +1,4 @@
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, In, Repository } from 'typeorm';
 import { Group } from 'groups/entities/group.entity';
 import { Injectable } from '@nestjs/common';
 import { Pageable } from '_common/types/pageable.interface';
@@ -29,6 +29,19 @@ export class GroupsRepository extends Repository<Group> {
     return this.findOneOrFail({
       where: { id },
       order: {
+        students: {
+          user: { lastName: 'ASC', firstName: 'ASC', patronymic: 'ASC' },
+        },
+      },
+      relations: { students: true },
+    });
+  }
+
+  findAllWithStudentsByIds(ids: number[]): Promise<Group[]> {
+    return this.find({
+      where: { id: In(ids) },
+      order: {
+        name: 'ASC',
         students: {
           user: { lastName: 'ASC', firstName: 'ASC', patronymic: 'ASC' },
         },

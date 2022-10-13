@@ -11,7 +11,7 @@ import { LocalAuthGuard } from 'auth/guards/local-auth.guard';
 import { LoginRequestDto } from 'auth/dto/login.request.dto';
 import { RefreshTokenRequestDto } from 'auth/dto/refresh-token.request.dto';
 import { TokenPairDto } from 'auth/dto/token-pair.dto';
-import { UserId } from 'auth/decorators/user.decorators';
+import { UserId } from 'auth/decorators/user-id.decorators';
 import { isNull } from 'lodash';
 
 @Controller('auth')

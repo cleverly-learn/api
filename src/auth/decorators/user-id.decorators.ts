@@ -1,4 +1,5 @@
 import { ExecutionContext, createParamDecorator } from '@nestjs/common';
+import { RequestUser } from 'auth/types/request-user.interface';
 
 /**
  * Fetches user id from request.
@@ -9,7 +10,7 @@ import { ExecutionContext, createParamDecorator } from '@nestjs/common';
  */
 export const UserId = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
-    const request = ctx.switchToHttp().getRequest<{ user: number }>();
-    return request.user;
+    const request = ctx.switchToHttp().getRequest<{ user: RequestUser }>();
+    return request.user.id;
   },
 );

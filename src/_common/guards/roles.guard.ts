@@ -1,18 +1,16 @@
-import { AuthService } from 'auth/auth.service';
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { ROLES_KEY } from '_common/decorators/roles.decorator';
 import { Reflector } from '@nestjs/core';
+import { RequestUser } from 'auth/types/request-user.interface';
 import { Role } from '_common/enums/role.enum';
 import { isEmpty } from 'lodash';
+import { isNotUndefined } from '_common/utils/is-not-undefined';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(
-    private readonly reflector: Reflector,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly reflector: Reflector) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  canActivate(context: ExecutionContext): boolean {
     const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -22,12 +20,8 @@ export class RolesGuard implements CanActivate {
       return true;
     }
 
-    const { user: userId } = context
-      .switchToHttp()
-      .getRequest<{ user: number }>();
+    const { user } = context.switchToHttp().getRequest<{ user: RequestUser }>();
 
-    const role = await this.authService.getRoleByUserId(userId);
-
-    return requiredRoles.includes(role);
+    return isNotUndefined(user.role) && requiredRoles.includes(user.role);
   }
 }

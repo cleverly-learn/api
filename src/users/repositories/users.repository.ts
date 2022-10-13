@@ -25,4 +25,15 @@ export class UsersRepository extends Repository<User> {
     });
     return user.isAdmin;
   }
+
+  findOneWithGoogleCredentials(
+    userId: number,
+  ): Promise<Pick<User, 'googleRefreshToken'>> {
+    return this.findOneOrFail({
+      select: {
+        googleRefreshToken: true,
+      },
+      where: { id: userId },
+    });
+  }
 }

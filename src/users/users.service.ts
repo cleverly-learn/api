@@ -89,4 +89,10 @@ export class UsersService {
   async checkIsAdmin(id: number): Promise<boolean> {
     return this.usersRepository.checkIsAdmin(id);
   }
+
+  findOneWithGoogleCredentials(
+    id: number,
+  ): Promise<Pick<User, 'googleRefreshToken'>> {
+    return this.usersRepository.findOneWithGoogleCredentials(id);
+  }
 }

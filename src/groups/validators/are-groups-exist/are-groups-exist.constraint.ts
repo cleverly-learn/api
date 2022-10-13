@@ -7,14 +7,16 @@ import {
 
 @Injectable()
 @ValidatorConstraint({ async: true })
-export class IsGroupExistConstraint implements ValidatorConstraintInterface {
+export class AreGroupExistConstraint implements ValidatorConstraintInterface {
   constructor(private readonly groupsService: GroupsService) {}
 
-  async validate(value: number): Promise<boolean> {
-    const exists = await this.groupsService.existsByIds(value);
+  async validate(values: number[]): Promise<boolean> {
+    const exists = await this.groupsService.existsByIds(...values);
 
     if (!exists) {
-      throw new NotFoundException(`Group with id ${value} is not found`);
+      throw new NotFoundException(
+        `Some of groups with ids ${values.join(',')} are not found`,
+      );
     }
 
     return exists;
