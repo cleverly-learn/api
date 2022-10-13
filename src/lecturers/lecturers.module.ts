@@ -1,4 +1,3 @@
-import { CoursesModule } from 'courses/courses.module';
 import { Lecturer } from 'lecturers/entities/lecturer.entity';
 import { LecturersController } from 'lecturers/lecturers.controller';
 import { LecturersRepository } from 'lecturers/repositories/lecturers.repository';
@@ -13,7 +12,6 @@ import { ValidateLecturerIdPipe } from 'lecturers/pipes/validate-lecturer-id.pip
   imports: [
     TypeOrmModule.forFeature([Lecturer]),
     forwardRef(() => UsersModule),
-    forwardRef(() => CoursesModule),
     ScheduleModule,
   ],
   controllers: [LecturersController],

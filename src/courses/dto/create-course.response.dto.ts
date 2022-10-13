@@ -1,7 +1,7 @@
 import { Course } from 'courses/entities/course.entity';
 import { GroupDto } from 'groups/dto/group.dto';
 
-export class CourseDto {
+export class CreateCourseResponseDto {
   id!: number;
 
   name!: string;

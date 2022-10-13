@@ -4,14 +4,14 @@ import { CoursesService } from 'courses/courses.service';
 import { GoogleModule } from 'google/google.module';
 import { GroupsModule } from 'groups/groups.module';
 import { LecturersModule } from 'lecturers/lecturers.module';
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from 'users/users.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Course]),
-    forwardRef(() => LecturersModule),
+    LecturersModule,
     GoogleModule,
     GroupsModule,
     UsersModule,
