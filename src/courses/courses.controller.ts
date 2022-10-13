@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
+import { CourseDto } from 'courses/dto/course.dto';
 import { CoursesService } from 'courses/courses.service';
 import { CreateCourseBodyDto } from 'courses/dto/create-course.body.dto';
-import { CreateCourseResponseDto } from 'courses/dto/create-course.response.dto';
 import { Role } from '_common/enums/role.enum';
 import { Roles } from '_common/decorators/roles.decorator';
 import { UserId } from 'auth/decorators/user-id.decorators';
@@ -15,13 +15,13 @@ export class CoursesController {
   async createCourse(
     @UserId() userId: number,
     @Body() { name, groupsIds, withClassroom }: CreateCourseBodyDto,
-  ): Promise<CreateCourseResponseDto> {
+  ): Promise<CourseDto> {
     const course = await this.coursesService.create({
       ownerUserId: userId,
       name,
       groupsIds,
       withClassroom: Boolean(withClassroom),
     });
-    return new CreateCourseResponseDto(course);
+    return new CourseDto(course);
   }
 }
