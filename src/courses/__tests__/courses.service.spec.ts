@@ -62,7 +62,7 @@ describe('CoursesService', () => {
             {
               group: {} as Group,
               id: 387,
-              user: { email: 'email1' } as User,
+              user: { email: 'email1', isRegistered: true } as User,
             },
           ],
         },
@@ -75,7 +75,20 @@ describe('CoursesService', () => {
             {
               group: {} as Group,
               id: 736,
-              user: { email: 'email2' } as User,
+              user: { email: 'email2', isRegistered: true } as User,
+            },
+          ],
+        },
+        {
+          faculty: {} as Faculty,
+          id: 4361,
+          name: 'test group 3',
+          scheduleId: 'group schedule 3',
+          students: [
+            {
+              group: {} as Group,
+              id: 7336,
+              user: { email: 'email3', isRegistered: false } as User,
             },
           ],
         },

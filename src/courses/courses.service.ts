@@ -36,12 +36,16 @@ export class CoursesService {
     ]);
 
     if (withClassroom) {
+      const registeredStudentsEmails = groups.flatMap(({ students }) =>
+        students
+          .map(({ user }) => user)
+          .filter(({ isRegistered }) => isRegistered)
+          .map(({ email }) => email),
+      );
       const course = await this.googleService.createCourse(
         {
           name,
-          studentsIds: groups.flatMap(({ students }) =>
-            students.map(({ user }) => user.email),
-          ),
+          studentsIds: registeredStudentsEmails,
         },
         {
           refresh_token: credentials.googleRefreshToken,
