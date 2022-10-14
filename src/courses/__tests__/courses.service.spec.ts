@@ -1,4 +1,4 @@
-import { Course } from 'courses/entities/course.entity';
+import { CoursesRepository } from 'courses/repositories/courses.repository';
 import { CoursesService } from 'courses/courses.service';
 import { Faculty } from 'faculties/entities/faculty.entity';
 import { GoogleService } from 'google/google.service';
@@ -9,7 +9,10 @@ import { LecturersService } from 'lecturers/lecturers.service';
 import { Test } from '@nestjs/testing';
 import { User } from 'users/entities/user.entity';
 import { UsersService } from 'users/users.service';
-import { mockProvider, mockRepository } from '_common/utils/test-helpers';
+import {
+  mockProvider,
+  mockRepositoryProvider,
+} from '_common/utils/test-helpers';
 
 describe('CoursesService', () => {
   let coursesService: CoursesService;
@@ -26,7 +29,7 @@ describe('CoursesService', () => {
         mockProvider(UsersService),
         mockProvider(GroupsService),
         mockProvider(GoogleService),
-        mockRepository(Course),
+        mockRepositoryProvider(CoursesRepository),
       ],
     }).compile();
 
@@ -52,6 +55,76 @@ describe('CoursesService', () => {
       const lecturersSpy = jest
         .spyOn(lecturersService, 'findOneByUserId')
         .mockResolvedValue(lecturer);
+      const groups: Group[] = [
+        {
+          faculty: {} as Faculty,
+          id: 34436,
+          name: 'test group 1',
+          scheduleId: 'group schedule',
+          students: [],
+        },
+        {
+          faculty: {} as Faculty,
+          id: 436,
+          name: 'test group 2',
+          scheduleId: 'group schedule 2',
+          students: [],
+        },
+        {
+          faculty: {} as Faculty,
+          id: 4361,
+          name: 'test group 3',
+          scheduleId: 'group schedule 3',
+          students: [],
+        },
+      ];
+      const groupsSpy = jest
+        .spyOn(groupsService, 'findAllByIds')
+        .mockResolvedValue(groups);
+      const googleCourse = {
+        name: 'new group',
+        id: 'qwerty',
+        alternativeLink: 'http',
+      };
+      const googleSpy = jest
+        .spyOn(googleService, 'createCourse')
+        .mockResolvedValue(googleCourse);
+
+      await coursesService.create({
+        groupsIds: [1, 2, 3],
+        name: 'test course',
+        ownerUserId: 7,
+        withClassroom: true,
+      });
+
+      expect(usersSpy).toBeCalledWith(7);
+      expect(lecturersSpy).toBeCalledWith(7);
+      expect(groupsSpy).toBeCalledWith([1, 2, 3]);
+      expect(googleSpy).toBeCalledWith(
+        {
+          name: 'test course',
+        },
+        {
+          refresh_token: 'refresh',
+        },
+      );
+    });
+  });
+
+  describe('inviteStudentsForCourse', () => {
+    it('When: Exists non registered users. Expected: Registered users invited', async () => {
+      const usersSpy = jest
+        .spyOn(usersService, 'findOneWithGoogleCredentials')
+        .mockResolvedValue({
+          googleRefreshToken: 'refresh',
+        });
+      const lecturer: Lecturer = {
+        id: 123,
+        scheduleId: 'schedule id',
+        user: {
+          id: 7,
+        } as User,
+      };
       const groups: Group[] = [
         {
           faculty: {} as Faculty,
@@ -93,31 +166,21 @@ describe('CoursesService', () => {
           ],
         },
       ];
-      const groupsSpy = jest
-        .spyOn(groupsService, 'findAllWithStudentsByIds')
-        .mockResolvedValue(groups);
-      const googleCourse = {
-        name: 'new group',
-        id: 'qwerty',
-        alternativeLink: 'http',
-      };
-      const googleSpy = jest
-        .spyOn(googleService, 'createCourse')
-        .mockResolvedValue(googleCourse);
+      const googleSpy = jest.spyOn(googleService, 'inviteStudentsToCourse');
 
-      await coursesService.create({
-        groupsIds: [1, 2, 3],
-        name: 'test course',
-        ownerUserId: 7,
-        withClassroom: true,
+      await coursesService.inviteStudentsForCourse({
+        id: 523,
+        name: 'test',
+        classroomId: 'class',
+        classroomLink: 'http',
+        groups,
+        owner: lecturer,
       });
 
       expect(usersSpy).toBeCalledWith(7);
-      expect(lecturersSpy).toBeCalledWith(7);
-      expect(groupsSpy).toBeCalledWith([1, 2, 3]);
       expect(googleSpy).toBeCalledWith(
         {
-          name: 'test course',
+          courseId: 'class',
           studentsIds: ['email1', 'email2'],
         },
         {

@@ -1,10 +1,9 @@
 import { Course } from 'courses/entities/course.entity';
+import { CoursesRepository } from 'courses/repositories/courses.repository';
 import { GoogleService } from 'google/google.service';
 import { GroupsService } from 'groups/groups.service';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import { LecturersService } from 'lecturers/lecturers.service';
-import { Repository } from 'typeorm';
 import { UsersService } from 'users/users.service';
 
 @Injectable()
@@ -14,8 +13,7 @@ export class CoursesService {
     private readonly googleService: GoogleService,
     private readonly lecturersService: LecturersService,
     private readonly usersService: UsersService,
-    @InjectRepository(Course)
-    private readonly coursesRepository: Repository<Course>,
+    private readonly coursesRepository: CoursesRepository,
   ) {}
 
   async create({
@@ -30,22 +28,15 @@ export class CoursesService {
     withClassroom: boolean;
   }): Promise<Course> {
     const [groups, lecturer, credentials] = await Promise.all([
-      this.groupsService.findAllWithStudentsByIds(groupsIds),
+      this.groupsService.findAllByIds(groupsIds),
       this.lecturersService.findOneByUserId(ownerUserId),
       this.usersService.findOneWithGoogleCredentials(ownerUserId),
     ]);
 
     if (withClassroom) {
-      const registeredStudentsEmails = groups.flatMap(({ students }) =>
-        students
-          .map(({ user }) => user)
-          .filter(({ isRegistered }) => isRegistered)
-          .map(({ email }) => email),
-      );
       const course = await this.googleService.createCourse(
         {
           name,
-          studentsIds: registeredStudentsEmails,
         },
         {
           refresh_token: credentials.googleRefreshToken,
@@ -64,5 +55,37 @@ export class CoursesService {
       owner: lecturer,
       groups,
     });
+  }
+
+  async existsById(id: number): Promise<boolean> {
+    const count = await this.coursesRepository.countBy({ id });
+    return count > 0;
+  }
+
+  findOneById(id: number): Promise<Course> {
+    return this.coursesRepository.findOneById(id);
+  }
+
+  async inviteStudentsForCourse(course: Course): Promise<void> {
+    const { googleRefreshToken } =
+      await this.usersService.findOneWithGoogleCredentials(
+        course.owner.user.id,
+      );
+    const registeredStudentsEmails = course.groups.flatMap(({ students }) =>
+      students
+        .map(({ user }) => user)
+        .filter(({ isRegistered }) => isRegistered)
+        .map(({ email }) => email),
+    );
+
+    return this.googleService.inviteStudentsToCourse(
+      {
+        courseId: course.classroomId,
+        studentsIds: registeredStudentsEmails,
+      },
+      {
+        refresh_token: googleRefreshToken,
+      },
+    );
   }
 }

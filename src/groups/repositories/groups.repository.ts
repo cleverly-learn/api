@@ -37,16 +37,9 @@ export class GroupsRepository extends Repository<Group> {
     });
   }
 
-  findAllWithStudentsByIds(ids: number[]): Promise<Group[]> {
+  findAllByIds(ids: number[]): Promise<Group[]> {
     return this.find({
       where: { id: In(ids) },
-      order: {
-        name: 'ASC',
-        students: {
-          user: { lastName: 'ASC', firstName: 'ASC', patronymic: 'ASC' },
-        },
-      },
-      relations: { students: true },
     });
   }
 }

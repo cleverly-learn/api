@@ -103,7 +103,7 @@ export class GroupsService {
     return this.groupsRepository.findOneWithStudentsById(id);
   }
 
-  findAllWithStudentsByIds(ids: number[]): Promise<Group[]> {
-    return this.groupsRepository.findAllWithStudentsByIds(ids);
+  findAllByIds(ids: number[]): Promise<Group[]> {
+    return this.groupsRepository.findAllByIds(ids);
   }
 }
