@@ -22,10 +22,10 @@ export class Course {
   @Column({ default: '' })
   name!: string;
 
-  @Column()
+  @Column({ default: '' })
   classroomId!: string;
 
-  @Column()
+  @Column({ default: '' })
   classroomLink!: string;
 
   @ManyToMany(() => Group)
