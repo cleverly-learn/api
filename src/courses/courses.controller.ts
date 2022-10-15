@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   ForbiddenException,
+  Get,
   Param,
   Post,
   UseGuards,
@@ -51,5 +52,11 @@ export class CoursesController {
     }
 
     return this.coursesService.inviteStudentsForCourse(course);
+  }
+
+  @Get()
+  async getAll(@UserId() userId: number): Promise<CoursePreviewDto[]> {
+    const courses = await this.coursesService.findAllByOwnerUserId(userId);
+    return courses.map((course) => new CoursePreviewDto(course));
   }
 }

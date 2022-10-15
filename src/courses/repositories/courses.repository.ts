@@ -19,4 +19,11 @@ export class CoursesRepository extends Repository<Course> {
       },
     });
   }
+
+  findAllByOwnerId(ownerUserId: number): Promise<Course[]> {
+    return this.find({
+      where: { owner: { user: { id: ownerUserId } } },
+      relations: { groups: true },
+    });
+  }
 }
