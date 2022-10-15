@@ -53,6 +53,7 @@ export class CoursesService {
 
     return this.coursesRepository.save({
       owner: lecturer,
+      name,
       groups,
     });
   }
