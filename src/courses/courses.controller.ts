@@ -8,6 +8,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import { CourseDto } from 'courses/dto/course.dto';
 import { CoursePreviewDto } from 'courses/dto/course-preview.dto';
 import { CoursesService } from 'courses/courses.service';
 import { CreateCourseBodyDto } from 'courses/dto/create-course.body.dto';
@@ -58,5 +59,19 @@ export class CoursesController {
   async getAll(@UserId() userId: number): Promise<CoursePreviewDto[]> {
     const courses = await this.coursesService.findAllByOwnerUserId(userId);
     return courses.map((course) => new CoursePreviewDto(course));
+  }
+
+  @Get(':id')
+  async get(
+    @Param('id', ValidateCourseIdPipe) id: number,
+    @UserId() userId: number,
+  ): Promise<CourseDto> {
+    const course = await this.coursesService.findOneById(id);
+
+    if (userId !== course.owner.user.id) {
+      throw new ForbiddenException();
+    }
+
+    return new CourseDto(course);
   }
 }
