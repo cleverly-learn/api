@@ -107,12 +107,13 @@ export class CoursesService {
         await this.usersService.findOneWithGoogleCredentials(
           course.owner.user.id,
         );
-      await this.googleService
-        .deleteCourse(
+      try {
+        await this.googleService.deleteCourse(
           { courseId: course.classroomId },
           { refresh_token: googleRefreshToken },
-        )
-        .catch();
+        );
+        // eslint-disable-next-line no-empty
+      } catch (err) {}
     }
 
     await this.coursesRepository.remove(course);
