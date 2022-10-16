@@ -2,6 +2,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import {
   Body,
   Controller,
+  Delete,
   ForbiddenException,
   Get,
   Param,
@@ -46,7 +47,7 @@ export class CoursesController {
     @Param('id', ValidateCourseIdPipe) courseId: number,
     @UserId() userId: number,
   ): Promise<void> {
-    const course = await this.coursesService.findOneById(courseId);
+    const course = await this.coursesService.findOneWithGroupsById(courseId);
 
     if (userId !== course.owner.user.id) {
       throw new ForbiddenException();
@@ -66,12 +67,26 @@ export class CoursesController {
     @Param('id', ValidateCourseIdPipe) id: number,
     @UserId() userId: number,
   ): Promise<CourseDto> {
-    const course = await this.coursesService.findOneById(id);
+    const course = await this.coursesService.findOneWithGroupsById(id);
 
     if (userId !== course.owner.user.id) {
       throw new ForbiddenException();
     }
 
     return new CourseDto(course);
+  }
+
+  @Delete(':id')
+  async delete(
+    @Param('id', ValidateCourseIdPipe) id: number,
+    @UserId() userId: number,
+  ): Promise<void> {
+    const course = await this.coursesService.findOneById(id);
+
+    if (userId !== course.owner.user.id) {
+      throw new ForbiddenException();
+    }
+
+    return this.coursesService.delete(course);
   }
 }

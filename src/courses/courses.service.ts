@@ -67,6 +67,10 @@ export class CoursesService {
     return this.coursesRepository.findOneById(id);
   }
 
+  findOneWithGroupsById(id: number): Promise<Course> {
+    return this.coursesRepository.findOneWithGroupsById(id);
+  }
+
   async inviteStudentsForCourse(course: Course): Promise<void> {
     const { googleRefreshToken } =
       await this.usersService.findOneWithGoogleCredentials(
@@ -92,5 +96,21 @@ export class CoursesService {
 
   findAllByOwnerUserId(ownerUserId: number): Promise<Course[]> {
     return this.coursesRepository.findAllByOwnerId(ownerUserId);
+  }
+
+  async delete(course: Course): Promise<void> {
+    const { googleRefreshToken } =
+      await this.usersService.findOneWithGoogleCredentials(
+        course.owner.user.id,
+      );
+    await Promise.all([
+      this.googleService
+        .deleteCourse(
+          { courseId: course.classroomId },
+          { refresh_token: googleRefreshToken },
+        )
+        .catch(),
+      this.coursesRepository.remove(course),
+    ]);
   }
 }

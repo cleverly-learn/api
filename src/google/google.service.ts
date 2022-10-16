@@ -77,4 +77,19 @@ export class GoogleService {
       ),
     );
   }
+
+  async deleteCourse(
+    { courseId }: { courseId: string },
+    credentials: Credentials,
+  ): Promise<void> {
+    this.oauthClient.setCredentials(credentials);
+
+    await this.classroom.courses.patch({
+      id: courseId,
+      updateMask: 'courseState',
+      requestBody: {
+        courseState: 'ARCHIVED',
+      },
+    });
+  }
 }

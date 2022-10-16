@@ -13,6 +13,15 @@ export class CoursesRepository extends Repository<Course> {
       where: { id },
       relations: {
         owner: true,
+      },
+    });
+  }
+
+  findOneWithGroupsById(id: number): Promise<Course> {
+    return this.findOneOrFail({
+      where: { id },
+      relations: {
+        owner: true,
         groups: {
           students: true,
         },
