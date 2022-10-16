@@ -65,7 +65,7 @@ export class GoogleService {
   ): Promise<void> {
     this.oauthClient.setCredentials(credentials);
 
-    await Promise.all(
+    await Promise.allSettled(
       studentsIds.map((studentId) =>
         this.classroom.invitations.create({
           requestBody: {
