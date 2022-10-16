@@ -102,18 +102,19 @@ export class CoursesService {
   }
 
   async delete(course: Course): Promise<void> {
-    const { googleRefreshToken } =
-      await this.usersService.findOneWithGoogleCredentials(
-        course.owner.user.id,
-      );
-    await Promise.all([
-      this.googleService
+    if (course.classroomId) {
+      const { googleRefreshToken } =
+        await this.usersService.findOneWithGoogleCredentials(
+          course.owner.user.id,
+        );
+      await this.googleService
         .deleteCourse(
           { courseId: course.classroomId },
           { refresh_token: googleRefreshToken },
         )
-        .catch(),
-      this.coursesRepository.remove(course),
-    ]);
+        .catch();
+    }
+
+    await this.coursesRepository.remove(course);
   }
 }

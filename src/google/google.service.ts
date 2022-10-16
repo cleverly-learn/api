@@ -84,14 +84,12 @@ export class GoogleService {
   ): Promise<void> {
     this.oauthClient.setCredentials(credentials);
 
-    await this.classroom.courses
-      .patch({
-        id: courseId,
-        updateMask: 'courseState',
-        requestBody: {
-          courseState: 'ARCHIVED',
-        },
-      })
-      .catch();
+    await this.classroom.courses.patch({
+      id: courseId,
+      updateMask: 'courseState',
+      requestBody: {
+        courseState: 'ARCHIVED',
+      },
+    });
   }
 }
