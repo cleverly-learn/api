@@ -94,8 +94,11 @@ export class CoursesService {
     );
   }
 
-  findAllByOwnerUserId(ownerUserId: number): Promise<Course[]> {
-    return this.coursesRepository.findAllByOwnerId(ownerUserId);
+  findAll(options: {
+    ownerUserId?: number;
+    studentUserId?: number;
+  }): Promise<Course[]> {
+    return this.coursesRepository.findAll(options);
   }
 
   async delete(course: Course): Promise<void> {

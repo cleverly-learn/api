@@ -7,12 +7,14 @@ import {
   Get,
   Param,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { CourseDto } from 'courses/dto/course.dto';
 import { CoursePreviewDto } from 'courses/dto/course-preview.dto';
 import { CoursesService } from 'courses/courses.service';
 import { CreateCourseBodyDto } from 'courses/dto/create-course.body.dto';
+import { GetAllQueryDto } from 'courses/dto/get-all.query.dto';
 import { JwtAuthGuard } from '_common/guards/jwt-auth.guard';
 import { Role } from '_common/enums/role.enum';
 import { Roles } from '_common/decorators/roles.decorator';
@@ -24,10 +26,10 @@ import { ValidateCourseIdPipe } from 'courses/pipes/validate-course-id.pipe';
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiTags('Courses')
 @ApiBearerAuth()
-@Roles(Role.LECTURER)
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
+  @Roles(Role.LECTURER)
   @Post()
   async createCourse(
     @UserId() userId: number,
@@ -42,6 +44,7 @@ export class CoursesController {
     return new CoursePreviewDto(course);
   }
 
+  @Roles(Role.LECTURER)
   @Post(':id/invite')
   async sendInvites(
     @Param('id', ValidateCourseIdPipe) courseId: number,
@@ -56,12 +59,21 @@ export class CoursesController {
     return this.coursesService.inviteStudentsForCourse(course);
   }
 
+  @Roles(Role.LECTURER, Role.STUDENT)
   @Get()
-  async getAll(@UserId() userId: number): Promise<CoursePreviewDto[]> {
-    const courses = await this.coursesService.findAllByOwnerUserId(userId);
+  async getAll(
+    @UserId() userId: number,
+    @Query() query: GetAllQueryDto,
+  ): Promise<CoursePreviewDto[]> {
+    if (![query.ownerUserId, query.studentUserId].includes(userId)) {
+      throw new ForbiddenException();
+    }
+
+    const courses = await this.coursesService.findAll(query);
     return courses.map((course) => new CoursePreviewDto(course));
   }
 
+  @Roles(Role.LECTURER, Role.STUDENT)
   @Get(':id')
   async get(
     @Param('id', ValidateCourseIdPipe) id: number,
@@ -69,13 +81,21 @@ export class CoursesController {
   ): Promise<CourseDto> {
     const course = await this.coursesService.findOneWithGroupsById(id);
 
-    if (userId !== course.owner.user.id) {
+    const allowedUsers = [
+      course.owner.user.id,
+      ...course.groups.flatMap(({ students }) =>
+        students.map(({ user }) => user.id),
+      ),
+    ];
+
+    if (!allowedUsers.includes(userId)) {
       throw new ForbiddenException();
     }
 
     return new CourseDto(course);
   }
 
+  @Roles(Role.LECTURER)
   @Delete(':id')
   async delete(
     @Param('id', ValidateCourseIdPipe) id: number,

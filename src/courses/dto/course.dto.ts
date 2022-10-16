@@ -1,19 +1,12 @@
 import { Course } from 'courses/entities/course.entity';
+import { CourseBaseDto } from 'courses/dto/course-base.dto';
 import { GroupDto } from 'groups/dto/group.dto';
 
-export class CourseDto {
-  id!: number;
-
-  name!: string;
-
-  classroomLink!: string;
-
+export class CourseDto extends CourseBaseDto {
   groups!: GroupDto[];
 
   constructor(course: Course) {
-    this.id = course.id;
-    this.name = course.name;
-    this.classroomLink = course.classroomLink;
+    super(course);
     this.groups = course.groups.map((group) => new GroupDto(group));
   }
 }

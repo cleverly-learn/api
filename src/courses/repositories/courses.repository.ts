@@ -20,6 +20,13 @@ export class CoursesRepository extends Repository<Course> {
   findOneWithGroupsById(id: number): Promise<Course> {
     return this.findOneOrFail({
       where: { id },
+      order: {
+        groups: {
+          students: {
+            user: { lastName: 'ASC', firstName: 'ASC', patronymic: 'ASC' },
+          },
+        },
+      },
       relations: {
         owner: true,
         groups: {
@@ -29,10 +36,35 @@ export class CoursesRepository extends Repository<Course> {
     });
   }
 
-  findAllByOwnerId(ownerUserId: number): Promise<Course[]> {
-    return this.find({
-      where: { owner: { user: { id: ownerUserId } } },
-      relations: { groups: true },
-    });
+  async findAll({
+    ownerUserId,
+    studentUserId,
+  }: {
+    ownerUserId?: number;
+    studentUserId?: number;
+  }): Promise<Course[]> {
+    const queryBuilder = this.createQueryBuilder('course')
+      .leftJoinAndSelect('course.groups', 'group')
+      .leftJoinAndSelect('group.faculty', 'faculty')
+      .leftJoinAndSelect('course.owner', 'owner')
+      .leftJoinAndSelect('owner.user', 'user')
+      .orderBy('course.id');
+    if (ownerUserId) {
+      queryBuilder.where('user.id = :ownerUserId', { ownerUserId });
+    }
+    if (studentUserId) {
+      const whereCoursesQueryBuilder = this.createQueryBuilder('course')
+        .select('course.id')
+        .innerJoin('course.groups', 'group')
+        .innerJoin('group.students', 'student')
+        .innerJoin('student.user', 'user')
+        .where('user.id = :studentUserId', { studentUserId });
+
+      queryBuilder
+        .where(`course.id IN (${whereCoursesQueryBuilder.getQuery()})`)
+        .setParameters(whereCoursesQueryBuilder.getParameters());
+    }
+
+    return queryBuilder.getMany();
   }
 }
