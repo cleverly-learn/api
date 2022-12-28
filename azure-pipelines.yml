@@ -16,6 +16,7 @@ steps:
   displayName: 'Install Node.js'
 
 - script: |
-    npm install
-    npm run build
-  displayName: 'npm install and build'
+    yarn install --frozen-lockfile
+    yarn test
+    yarn build
+  displayName: 'yarn install, test, uild'
